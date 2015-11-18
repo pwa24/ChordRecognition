@@ -19,13 +19,13 @@ nt = 10; % number of chord types (i.e maj min)
 % 8. c-m7
 % 9. c-d
 % 10. c-d7
-% nt + 1. c#-maj etc
+% nt + 1. c#M etc
 
 % according to the paper  Additionally, we individuate the added notes that possibly enrich the
 % basic harmony: we handle the cases of seventh, sixth and fourth. By considering 12
 % root notes × 3 possible modes (see below) × 3 possible added notes, we obtain 108
 % possible labels. Does this mean they do not count the generic M, m, dim
-% cases?
+% cases? That seems to suggest (M4, M6, M7, m4, m6, m7, d4, d6, d7)
 
 % i % nt gives chord type (i.e. maj)
 % i / nt gives gives chord root (0-11) with C == 0
