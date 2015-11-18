@@ -6,23 +6,25 @@ function F = basis(X,yt,ytm,t)
 % t = event number
 
 F = zeros(43,1);
+nt = 9; % number of chord types (i.e maj min)
 
 % input label
 % 1. c-maj
 % 2. c-min
 % ...
-% 10. c#-maj etc
+% nt + 1. c#-maj etc
 
-% i % 9 gives chord type (i.e. maj)
-% i / 9 gives gives chord root (0-11) with C == 0
+% i % nt gives chord type (i.e. maj)
+% i / nt gives gives chord root (0-11) with C == 0
 
 % ------------------
 % 1. Asserted Root Note
 % ------------------
 
-if (X(t).pitch(t, round(yt ./ 9) + 1) == 1)
+if (X(t).pitch(t, round(yt ./ nt) + 1) == 1)
     F(1) = 1;
 end
 
 
 end
+
