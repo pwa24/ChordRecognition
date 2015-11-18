@@ -1,6 +1,6 @@
 function F = basis(X,yt,ytm,t)
 
-% X = the training data (X from parseDataset())
+% X(i) = the training data (X from parseDataset())
 % yt = the current label
 % yt-1 = the previous label
 % t = event number
@@ -21,9 +21,18 @@ nt = 9; % number of chord types (i.e maj min)
 % 1. Asserted Root Note
 % ------------------
 
-if (X(t).pitch(t, round(yt ./ nt) + 1) == 1)
+if (X.pitch(t, round(yt./nt) + 1) == 1)
     F(1) = 1;
 end
+
+% ------------------
+% 2. Asserted Root in Next Event
+% ------------------
+
+if (t+1 <= X.numEvents && X.pitch(t+1, round(yt./nt) + 1) == 1)
+    F(2) = 1;
+end
+
 
 
 end
