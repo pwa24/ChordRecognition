@@ -6,7 +6,9 @@ function F = basis(X,yt,ytm,t)
 % t = event number
 
 F = zeros(43,1);
-nt = 10; % number of chord types (i.e maj min)
+nt = 12; % number of chord types (i.e maj min)
+C = mod(mod(yt,nt) + nt-1,nt) + 1; % chord type
+R = floor((yt-1)./nt) + 1; % root
 
 % input label
 % 1. c-M
@@ -18,14 +20,16 @@ nt = 10; % number of chord types (i.e maj min)
 % 7. c-m6
 % 8. c-m7
 % 9. c-d
-% 10. c-d7
-% nt + 1. c#M etc
+% 10. c-d4
+% 11. c-d6
+% 12. c-d7
+% nt + 1. c#-maj etc
 
 % according to the paper  Additionally, we individuate the added notes that possibly enrich the
 % basic harmony: we handle the cases of seventh, sixth and fourth. By considering 12
 % root notes × 3 possible modes (see below) × 3 possible added notes, we obtain 108
 % possible labels. Does this mean they do not count the generic M, m, dim
-% cases? That seems to suggest (M4, M6, M7, m4, m6, m7, d4, d6, d7)
+% cases?
 
 % i % nt gives chord type (i.e. maj)
 % i / nt gives gives chord root (0-11) with C == 0
@@ -34,7 +38,7 @@ nt = 10; % number of chord types (i.e maj min)
 % 1. Asserted Root Note
 % ------------------
 
-if (X.pitch(t, round(yt./nt) + 1) == 1)
+if (X.pitch(t, R) == 1)
     F(1) = 1;
 end
 
@@ -42,7 +46,7 @@ end
 % 2. Asserted Root in Next Event
 % ------------------
 
-if (t+1 <= X.numEvents && X.pitch(t+1, round(yt./nt) + 1) == 1)
+if (t+1 <= X.numEvents && X.pitch(t+1, R) == 1)
     F(2) = 1;
 end
 
@@ -50,7 +54,72 @@ end
 % 3. Asserted Added Note
 % ------------------
 
+PP = [0,5,9,11,0,5,9,10,0,5,9,9];
 
+if (X.pitch(t, mod(mod(R+PP(C),12)+11,12)+1))
+    F(3) = 1;
+end
+
+% ------------------
+% 5-9. Asserted Notes of Chord
+% ------------------
+
+CT = struct('sh',[]);
+CT(1).sh = [0,4,7];
+CT(2).sh = [0,4,5,7]; % [0,4,6,7]
+CT(3).sh = [0,4,7,9];
+CT(4).sh = [0,4,7,11];
+CT(5).sh = [0,3,7];
+CT(6).sh = [0,3,5,7];
+CT(7).sh = [0,3,7,9]; % [0,3,7,9]
+CT(8).sh = [0,3,7,10];
+CT(9).sh = [0,3,6];
+CT(10).sh = [0,3,5,6];
+CT(11).sh = [0,3,6,9];
+CT(12).sh = [0,3,6,9];
+
+
+n_count = 0;
+for i=1:size(CT(C).sh,2)
+   if( X.pitch(t,mod(mod(CT(C).sh(i)+R,12)+11,12)+1) == 1)
+       F(5 + n_count) = 1;
+       n_count = n_count + 1;
+   end
+end
+    
+% ------------------
+% 10. Bass is Root Note
+% ------------------
+
+if (X.bass(t) == R)
+    F(10) = 1;
+end
+
+% ------------------
+% 11. Bass is Third
+% ------------------
+
+if (C <= 4) % it's a major third
+    if (X.bass(t) == mod(mod(R+4,12)+11,12)+1);
+        F(11) = 1;
+    end
+else
+    if (X.bass(t) == mod(mod(R+3,12)+11,12)+1);
+        F(11) = 1;
+    end
+end  
+
+% ------------------
+% 12. Bass is Fifth
+% ------------------
+
+if (X.bass(t) == mod(mod(R+7,12)+11,12)+1);
+   F(12) = 1; 
+end
+
+% ------------------
+% 13. Bass is Added Note
+% ------------------
 
 % ------------------
 % 22-43 Sucessions
@@ -81,5 +150,6 @@ ChordDistance = [1 0 5 1 0;    %M 5 M
                  1 0 9 2 7;    %M 9 m7
                  1 4 0 1 7];   %M4 0 M7
 F(22:43) = all(ChordDistance == chordDistComp, 2);
+
 end
 
