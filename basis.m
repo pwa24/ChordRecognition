@@ -5,6 +5,10 @@ function F = basis(X,yt,ytm,t)
 % yt-1 = the previous label
 % t = event number
 
+%%%INTEGRATE THIS?%
+[r1 m1 a1] = getChordDetails(yt);
+[r0 m0 a0] = getChordDetails(ytm);
+%%%
 F = zeros(43,1);
 nt = 12; % number of chord types (i.e maj min)
 C = mod(mod(yt,nt) + nt-1,nt) + 1; % chord type
@@ -125,8 +129,8 @@ end
 % 22-43 Sucessions
 % ------------------
 
-semitoneDist = mod(yt(1)-ytm(1),12);
-chordDistComp = repmat([ytm(2) ytm(3) semitoneDist yt(2) yt(3)], [43-22+1, 1]);
+semitoneDist = mod(r1-r0,12);
+chordDistComp = repmat([m0 a0 semitoneDist m1 a1], [43-22+1, 1]);
 ChordDistance = [1 0 5 1 0;    %M 5 M
                  1 0 5 2 0;    %M 5 m
                  1 7 5 2 0;    %M7 5 m
