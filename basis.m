@@ -52,8 +52,34 @@ end
 
 
 
+% ------------------
+% 22-43 Sucessions
+% ------------------
 
-
-
+semitoneDist = mod(yt(1)-ytm(1),12);
+chordDistComp = repmat([ytm(2) ytm(3) semitoneDist yt(2) yt(3)], [43-22+1, 1]);
+ChordDistance = [1 0 5 1 0;    %M 5 M
+                 1 0 5 2 0;    %M 5 m
+                 1 7 5 2 0;    %M7 5 m
+                 1 7 5 1 0;    %M7 5 M
+                 2 0 5 1 0;    %m 5 M
+                 2 0 5 1 7;    %m 5 M7
+                 2 7 5 1 0;    %m7 5 M
+                 2 7 5 1 7;    %m7 5 M7
+                 1 0 7 1 0;    %M 7 M
+                 1 0 7 1 7;    %M 7 M7
+                 1 0 2 1 0;    %M 2 M
+                 1 0 2 2 0;    %M 2 m
+                 1 0 2 1 7;    %M 2 M7
+                 2 6 2 1 0;    %m6 2 M
+                 2 6 2 1 7;    %m6 2 M7
+                 3 0 1 1 0;    %d 1 M
+                 3 0 1 2 0;    %d 1 m
+                 2 0 3 1 0;    %m 3 M
+                 2 0 8 1 0;    %m 8 M
+                 1 0 9 2 0;    %M 9 m
+                 1 0 9 2 7;    %M 9 m7
+                 1 4 0 1 7];   %M4 0 M7
+F(22:43) = all(ChordDistance == chordDistComp, 2);
 end
 
