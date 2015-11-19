@@ -8,9 +8,9 @@ F = textscan(fileID, '%s %f %f %f %f %f %f %f %f %f %f %f %f %f %s %f %s', 'Deli
 fclose(fileID);
 
 F_pitch = [F{3:14}];
-F_bass = F{15};
+F_bass = arrayfun(@(x) parsePitch(x),F{15});
 F_meter = F{16};
-F_chord = F{17};
+F_chord = cell2mat(cellfun(@(x) parseChord(x),F{17}, 'UniformOutput', 0));
 
 %Divide the songs
 sidList = {};
@@ -42,7 +42,7 @@ for i = 1:size(sidList,2)
     X(i).sid = sid;
     X(i).numEvents = songLength;
     X(i).pitch = F_pitch(eStart:eEnd,:);
-    X(i).bass = mapPitch(F_bass(eStart:eEnd));
+    X(i).bass = F_bass(eStart:eEnd);
     X(i).meter = F_meter(eStart:eEnd);
     
     T(i).sid = sid;
