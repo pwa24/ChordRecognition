@@ -47,7 +47,7 @@ for i = 1:size(sidList,2)
     
     T(i).sid = sid;
     T(i).numEvents = songLength;
-    T(i).chord = F_chord(eStart:eEnd);
+    T(i).chord = F_chord(eStart:eEnd,:);
     
     eStart = eEnd + 1;
 end
