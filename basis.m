@@ -11,8 +11,7 @@ function F = basis(X,yt,ytm,t)
 %%%
 F = zeros(43,1);
 nt = 12; % number of chord types (i.e maj min)
-C = mod(mod(yt,nt) + nt-1,nt) + 1; % chord type
-R = floor((yt-1)./nt) + 1; % root
+C = mod(yt,nt) + 1;
 
 % input label
 % 1. c-M
@@ -31,7 +30,7 @@ R = floor((yt-1)./nt) + 1; % root
 
 % according to the paper  Additionally, we individuate the added notes that possibly enrich the
 % basic harmony: we handle the cases of seventh, sixth and fourth. By considering 12
-% root notes × 3 possible modes (see below) × 3 possible added notes, we obtain 108
+% root notes Ã 3 possible modes (see below) Ã 3 possible added notes, we obtain 108
 % possible labels. Does this mean they do not count the generic M, m, dim
 % cases?
 
@@ -42,7 +41,7 @@ R = floor((yt-1)./nt) + 1; % root
 % 1. Asserted Root Note
 % ------------------
 
-if (X.pitch(t, R) == 1)
+if (X.pitch(t, r1+1) == 1)
     F(1) = 1;
 end
 
@@ -50,7 +49,7 @@ end
 % 2. Asserted Root in Next Event
 % ------------------
 
-if (t+1 <= X.numEvents && X.pitch(t+1, R) == 1)
+if (t+1 <= X.numEvents && X.pitch(t+1, r1+1) == 1)
     F(2) = 1;
 end
 
@@ -60,7 +59,7 @@ end
 
 PP = [0,5,9,11,0,5,9,10,0,5,9,9];
 
-if (X.pitch(t, mod(mod(R+PP(C),12)+11,12)+1))
+if (X.pitch(t, mod(mod(r1+1+PP(C),12)+11,12)+1))
     F(3) = 1;
 end
 
@@ -85,7 +84,7 @@ CT(12).sh = [0,3,6,9];
 
 n_count = 0;
 for i=1:size(CT(C).sh,2)
-   if( X.pitch(t,mod(mod(CT(C).sh(i)+R,12)+11,12)+1) == 1)
+   if( X.pitch(t,mod(mod(CT(C).sh(i)+r1+1,12)+11,12)+1) == 1)
        F(5 + n_count) = 1;
        n_count = n_count + 1;
    end
@@ -95,7 +94,7 @@ end
 % 10. Bass is Root Note
 % ------------------
 
-if (X.bass(t) == R)
+if (X.bass(t) == r1+1)
     F(10) = 1;
 end
 
@@ -104,11 +103,11 @@ end
 % ------------------
 
 if (C <= 4) % it's a major third
-    if (X.bass(t) == mod(mod(R+4,12)+11,12)+1);
+    if (X.bass(t) == mod(mod(r1+5,12)+11,12)+1);
         F(11) = 1;
     end
 else
-    if (X.bass(t) == mod(mod(R+3,12)+11,12)+1);
+    if (X.bass(t) == mod(mod(r1+4,12)+11,12)+1);
         F(11) = 1;
     end
 end  
@@ -117,13 +116,17 @@ end
 % 12. Bass is Fifth
 % ------------------
 
-if (X.bass(t) == mod(mod(R+7,12)+11,12)+1);
+if (X.bass(t) == mod(mod(r1+7,12)+11,12)+1);
    F(12) = 1; 
 end
 
 % ------------------
 % 13. Bass is Added Note
 % ------------------
+
+F(4) = 1;
+F(13) = 1;
+F(14:21) = 1;
 
 % ------------------
 % 22-43 Sucessions
