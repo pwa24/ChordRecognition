@@ -1,18 +1,33 @@
 % CARPE DIEM
+function yh = carpe_diem_alg(X,W,K,T);
 
 % takes any input of events and labels them using the weights learnt above
 % these two algorithms should be separated
-
-K = 5; % number of labels
-T = 4; % number of events
 
 G = zeros(K, T);
 B = zeros(T, 1); % contains the values Bt
 yh = zeros(T, 1);
 yp = zeros(T, 1);
+S0 = zeros(K,T);
+S1 = zeros(K,K,T);
 
-S0 = rand(K, T); % mock vertical values
-S1 = rand(K, K, T-1); % mock horizontal values
+for k=0:K-1
+    for t=1:T
+        F = basis(X,k,1,t);
+        S0(k+1,t) = W(1:21)' * F(1:21);
+    end
+end
+for k1=0:K-1
+    for k2=0:K-1
+        for t=1:T-1
+            F = basis(X,k1,k2,t)
+            S1(k1+1,k2+1,t) = W(22:43)' * F(22:43);
+        end
+    end
+end
+
+%S0 = rand(K, T); % mock vertical values
+%S1 = rand(K, K, T-1); % mock horizontal values
 
 for y_i=1:K
     % initialize each y1 to vertical weight.
@@ -63,5 +78,5 @@ for t_i=2:T
     
 end
 
-LEARNED_PATH = yh; % the learnt path on input
+%LEARNED_PATH = yh; % the learnt path on input
 % done !!
