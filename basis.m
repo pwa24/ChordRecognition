@@ -1,4 +1,4 @@
-function F = basis(X,yt,ytm,t)
+function F = basis(X,yt,ytm,t,S)
 
 % X(i) = the training data (X from parseDataset())
 % yt = the current label
@@ -124,9 +124,9 @@ end
 % 13. Bass is Added Note
 % ------------------
 
-F(4) = 1;
-F(13) = 1;
-F(14:21) = 1;
+%F(4) = 1;
+%F(13) = 1;
+%F(14:21) = 1;
 
 % ------------------
 % 22-43 Sucessions
@@ -158,5 +158,12 @@ ChordDistance = [1 0 5 1 0;    %M 5 M
                  1 4 0 1 7];   %M4 0 M7
 F(22:43) = all(ChordDistance == chordDistComp, 2);
 
+switch S
+    case 0
+        F = F(1:21);
+    case 1
+        F = F(22:43);
+end
+    
 end
 
