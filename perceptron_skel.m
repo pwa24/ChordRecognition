@@ -19,6 +19,7 @@ for epoch=1:MAX_EPOCH
         Hx = Hx - 1;
         
         COMP = [Hx,T(n_i).chord];
+        CORRECT = sum((Hx - T(n_i).chord)==0);
         
         if (isequal(Hx,T(n_i).chord) == 0) % compare estimate (Hx) with target values
             for t=1:TE
