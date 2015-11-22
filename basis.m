@@ -30,7 +30,7 @@ C = mod(yt,nt) + 1;
 
 % according to the paper  Additionally, we individuate the added notes that possibly enrich the
 % basic harmony: we handle the cases of seventh, sixth and fourth. By considering 12
-% root notes Ã 3 possible modes (see below) Ã 3 possible added notes, we obtain 108
+% root notes × 3 possible modes (see below) × 3 possible added notes, we obtain 108
 % possible labels. Does this mean they do not count the generic M, m, dim
 % cases?
 
@@ -57,9 +57,9 @@ end
 % 3. Asserted Added Note
 % ------------------
 
-PP = [0,5,9,11,0,5,9,10,0,5,9,9];
+PP = [0,5,9,10,0,5,9,10,0,5,9,9];
 
-if (X.pitch(t, mod(mod(r1+1+PP(C),12)+11,12)+1))
+if (X.pitch(t,mod(mod(r1+1+PP(C),12)+11,12)+1) == 1)
     F(3) = 1;
 end
 
@@ -71,7 +71,7 @@ CT = struct('sh',[]);
 CT(1).sh = [0,4,7];
 CT(2).sh = [0,4,5,7]; % [0,4,6,7]
 CT(3).sh = [0,4,7,9];
-CT(4).sh = [0,4,7,11];
+CT(4).sh = [0,4,7,10];
 CT(5).sh = [0,3,7];
 CT(6).sh = [0,3,5,7];
 CT(7).sh = [0,3,7,9]; % [0,3,7,9]
@@ -85,11 +85,19 @@ CT(12).sh = [0,3,6,9];
 n_count = 0;
 for i=1:size(CT(C).sh,2)
    if( X.pitch(t,mod(mod(CT(C).sh(i)+r1+1,12)+11,12)+1) == 1)
-       F(5 + n_count) = 1;
        n_count = n_count + 1;
    end
 end
+F(5 + n_count) = 1;
+
+% ------------------
+% 4. Fully statesd
+% ------------------
     
+if (n_count == size(CT(C).sh,2))
+    F(4) = 1;
+end
+
 % ------------------
 % 10. Bass is Root Note
 % ------------------
@@ -124,10 +132,9 @@ end
 % 13. Bass is Added Note
 % ------------------
 
-%F(4) = 1;
-%F(13) = 1;
-
-
+if (X.bass(t) == mod(mod(r1+1+PP(C),12)+11,12)+1)
+    F(13) = 1;
+end
 
 % ------------------
 % 14-21 ChordChangeOnMetricalPattern
@@ -152,15 +159,16 @@ ChordChangeOnMetricalPattern = [1 0 0 0;
                                 1 1 1 0;
                                 1 1 1 1];
 
-F(14:21) = all(repmat(ChordChangeMeter, 21-14+1, 1) == ChordChangeOnMetricalPattern, 2);        
-
+F(14:21) = all(repmat(ChordChangeMeter, 21-14+1, 1) == ChordChangeOnMetricalPattern, 2);  
 
 % ------------------
 % 22-43 Sucessions
 % ------------------
 
-semitoneDist = mod(r1-r0,12);
+semitoneDist = mod(abs(r1-r0),12);
 chordDistComp = repmat([m0 a0 semitoneDist m1 a1], [43-22+1, 1]);
+
+%{
 ChordDistance = [1 0 5 1 0;    %M 5 M
                  1 0 5 2 0;    %M 5 m
                  1 7 5 2 0;    %M7 5 m
@@ -183,13 +191,37 @@ ChordDistance = [1 0 5 1 0;    %M 5 M
                  1 0 9 2 0;    %M 9 m
                  1 0 9 2 7;    %M 9 m7
                  1 4 0 1 7];   %M4 0 M7
+%}        
+ChordDistance = [0 0 5 0 0;    %M 5 M
+                 0 0 5 1 0;    %M 5 m
+                 0 3 5 1 0;    %M7 5 m
+                 0 3 5 0 0;    %M7 5 M
+                 1 0 5 0 0;    %m 5 M
+                 1 0 5 0 3;    %m 5 M7
+                 1 3 5 0 0;    %m7 5 M
+                 1 3 5 0 3;    %m7 5 M7
+                 0 0 7 0 0;    %M 7 M
+                 0 0 7 0 3;    %M 7 M7
+                 0 0 2 0 0;    %M 2 M
+                 0 0 2 1 0;    %M 2 m
+                 0 0 2 0 3;    %M 2 M7
+                 1 2 2 0 0;    %m6 2 M
+                 1 2 2 0 3;    %m6 2 M7
+                 2 0 1 0 0;    %d 1 M
+                 2 0 1 1 0;    %d 1 m
+                 1 0 3 0 0;    %m 3 M
+                 1 0 8 0 0;    %m 8 M
+                 0 0 9 1 0;    %M 9 m
+                 0 0 9 1 3;    %M 9 m7
+                 0 1 0 0 3];   %M4 0 M7
+             
 F(22:43) = all(ChordDistance == chordDistComp, 2);
 
 switch S
     case 0
-        F = F(1:21);
+        F = F(1:13);
     case 1
-        F = F(22:43);
+        F = F(14:43);
 end
     
 end
