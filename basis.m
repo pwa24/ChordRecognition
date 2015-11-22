@@ -126,7 +126,34 @@ end
 
 %F(4) = 1;
 %F(13) = 1;
-%F(14:21) = 1;
+
+
+
+% ------------------
+% 14-21 ChordChangeOnMetricalPattern
+% ------------------
+chordchange=(yt~=ytm);
+meterbnd=3; %consider meter>3 as accented
+
+if (t>1 && t<X.numEvents)
+    ChordChangeMeter = [chordchange X.meter(t-1)>meterbnd X.meter(t)>meterbnd X.meter(t+1)>meterbnd];    
+elseif t==1
+    ChordChangeMeter = [chordchange 0 X.meter(t)>meterbnd X.meter(t+1)>meterbnd];
+elseif t==X.numEvents
+    ChordChangeMeter = [chordchange X.meter(t-1)>meterbnd X.meter(t)>meterbnd 0];
+end;
+    
+ChordChangeOnMetricalPattern = [1 0 0 0;
+                                1 0 0 1;
+                                1 0 1 0;
+                                1 0 1 1;
+                                1 1 0 0;
+                                1 1 0 1;
+                                1 1 1 0;
+                                1 1 1 1];
+
+F(14:21) = all(repmat(ChordChangeMeter, 21-14+1, 1) == ChordChangeOnMetricalPattern, 2);        
+
 
 % ------------------
 % 22-43 Sucessions
