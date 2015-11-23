@@ -11,6 +11,7 @@ F_pitch = [F{3:14}];
 F_bass = F{15};
 F_meter = F{16};
 F_chord = cell2mat(cellfun(@(x) parseChord(x),F{17}, 'UniformOutput', 0));
+F_label = F{17};
 
 %Divide the songs
 sidList = {};
@@ -31,7 +32,7 @@ end
 clear sid;
 
 X = struct('sid', '', 'numEvents', 0, 'pitch', [], 'bass', [], 'meter', []);
-T = struct('sid', '', 'numEvents', 0, 'chord', {});
+T = struct('sid', '', 'numEvents', 0, 'chord', {}, 'label', {});
 eStart = 1;
 for i = 1:size(sidList,2)
     sid = sidList{i}{1};
@@ -48,6 +49,7 @@ for i = 1:size(sidList,2)
     T(i).sid = sid;
     T(i).numEvents = songLength;
     T(i).chord = F_chord(eStart:eEnd,:);
+    T(i).label = F_label(eStart:eEnd,:);
     
     eStart = eEnd + 1;
 end
