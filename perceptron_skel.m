@@ -2,7 +2,8 @@
 
 MAX_EPOCH = 50;
 ETA = 0.001;
-[X,T] = parseDataset('jsbach_chorals_harmony.data');
+[X,T] = parseDataset(fullfile('Datasets', 'jsbach_chorals_harmony.f0'));
+%[X,T] = parseDataset(fullfile('Datasets', 'jsbach_chorals_harmony.f1');
 
 % initialize weights to zero
 % weights used at every vertical evalu'ation and horizontal evaluation
