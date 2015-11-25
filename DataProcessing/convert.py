@@ -6,27 +6,15 @@ import os
 #debuging use
 def visualize(notes):
     key = ['C','C#','D','Eb','E','F','F#','G','Ab','A','Bb','B']
-    pitches = notes[0:11]
+    pitches = notes[0:12]
     newNotes = ['', '', '', '', '', '', '', '', '', '', '', '', key[notes[12]]]
-    for i in range(0,11):
+    for i in range(0,12):
         if pitches[i] >= 1: newNotes[i] = key[i]
     return newNotes
 
 #notes = list of midi pitches (0-127)
-#newNotes = [b, b, b, b, b, b, b, b, b, b, b, b, bass]
-def formatNotes(notes):
-    newNotes = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 128]
-    minNote = 128
-    for note in notes:
-        if minNote > note:
-            minNote = note
-            newNotes[12] = note % 12
-        newNotes[note % 12] = 1
-    return newNotes
-
-#notes = list of midi pitches (0-127)
 #newNotes = [n, n, n, n, n, n, n, n, n, n, n, n, bass]
-def newFormatNotes(notes):
+def formatNotes(notes):
     notes = list(set(notes))
     newNotes = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 128]
     minNote = 128
@@ -34,14 +22,17 @@ def newFormatNotes(notes):
         if minNote > note:
             minNote = note
             newNotes[12] = note % 12
-        newNotes[note % 12] = newNotes[note % 12] + 1
+#        newNotes[note % 12] = 1                        #format 0
+        newNotes[note % 12] = newNotes[note % 12] + 1   #format 1
     return newNotes
 
-
-def readcsv(filePath, sid, fmt, debug):
+def readcsv(filePath, sid, debug):
     with open(filePath, newline='') as file:
         #CSV -> List
         RR = list(csv.reader(file, delimiter=',', skipinitialspace=True))
+        #L = Lyric (annotated chord list from MIDI)
+        CL = list(filter(lambda x: (x[2] == 'Lyric_t'), RR))
+        CL = list(map(lambda x: [int(x[1]), x[2], x[3]], CL))
         #Keep only 'Note_<off/on>_c' rows
         R = list(filter(lambda x: (x[2] == 'Note_on_c') or (x[2] == 'Note_off_c'), RR))
         #Keep only columns 2, 3, 5, 6
@@ -71,15 +62,18 @@ def readcsv(filePath, sid, fmt, debug):
         eList2 = []
         i = 1
         W = []
-        for k, v in sorted(eList.items()):
-            if debug:
-                x = [sid, k]
-                if fmt == 1: x.extend(visualize(formatNotes(v)))
-                if fmt == 2: x.extend(visualize(newFormatNotes(v)))
-            else:
-                x = [sid, i]
-                if fmt == 1: x.extend(formatNotes(v))
-                if fmt == 2: x.extend(newFormatNotes(v))
+        chordLbl = 'N' #Default: no chord label
+        CL_index = 0
+        for time, values in sorted(eList.items()):
+            #Change currently selected chord label
+            if CL_index < len(CL) and time == CL[CL_index][0]:
+                chordLbl = CL[CL_index][2]
+                CL_index = CL_index + 1
+            x = [sid, i]
+            if debug: x.extend(visualize(formatNotes(values)))
+            else: x.extend(formatNotes(values))
+            #x.append(metric)
+            x.append(chordLbl)
             W.append(x)
             i = i + 1
         return W
@@ -93,9 +87,6 @@ def writecsv(filePath, mode, W):
 parser = argparse.ArgumentParser()
 parser.add_argument('inputPath', help='MIDI file or Dir containing MIDI files')
 parser.add_argument('outputFile', help='Output csv file')
-parser.add_argument('-n', dest='format', action='store_const',
-                    const=2, default=1,
-                    help='Use new format (default: [pitch, root, meter])')
 parser.add_argument('-d', dest='debug', action='store_const',
                     const=True, default=False,
                     help='Debug mode. Use notes instead of numbers for .csv')
@@ -107,7 +98,7 @@ if os.path.isfile(args.inputPath):
         fileTitle = args.inputPath.split(sep='.')[0]
         midiToCSV = ['Midicsv.exe', args.inputPath, 'temp.csv']
         subprocess.call(midiToCSV)
-        W = readcsv('temp.csv', fileTitle, args.format, args.debug)
+        W = readcsv('temp.csv', fileTitle, args.debug)
         writecsv(args.outputFile, 'w', W)
     subprocess.call('rm temp.csv')
 #convert multiple files
@@ -119,7 +110,7 @@ elif os.path.isdir(args.inputPath):
             fileTitle = file.split(sep='.')[0]
             midiToCSV = ['Midicsv.exe', args.inputPath + '/' + file, 'temp.csv']
             subprocess.call(midiToCSV)
-            W = readcsv('temp.csv', fileTitle, args.format, args.debug)
+            W = readcsv('temp.csv', fileTitle, args.debug)
             writecsv(args.outputFile, 'a', W)
     subprocess.call('rm temp.csv')
 else:

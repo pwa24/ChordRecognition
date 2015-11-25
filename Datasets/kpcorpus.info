@@ -1,0 +1,7 @@
+MIDI & Chord labels extracted from http://www.cs.northwestern.edu/~pardo/kpcorpus.htm
+
+Modifications:
+-Chord labels converted to our naming convention
+-X_Ger6 and X_It6 chords resolved into X_7 chords manually
+-some chords like X_d7b9_0 have been left as they are. Ignore these please when parsing or label them as N?
+-The following files with bad labelling have been removed from original dataset: ex6.mid, ex23a.mid, ex39a.mid
