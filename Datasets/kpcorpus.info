@@ -1,7 +1,29 @@
 MIDI & Chord labels extracted from http://www.cs.northwestern.edu/~pardo/kpcorpus.htm
 
+Regex Replace:
+Get chord list: "^(.*?)_" -> ""
+Trim trailing spaces: "\s$" -> ""
+_dim.*$ -> _dim7
+_dom7.*$ -> _7
+_fdim.*$ -> _dim7
+_hdim.*$ -> _hdim7
+_maj_[0123].*$ -> _maj
+_maj_6.*$ -> _maj6
+_maj7.*$ -> _maj7
+_min_[0123].*$ -> _min
+_min_6.*$ -> _min6
+_min7.*$ -> _min7
+
 Modifications:
 -Chord labels converted to our naming convention
 -X_Ger6 and X_It6 chords resolved into X_7 chords manually
 -some chords like X_d7b9_0 have been left as they are. Ignore these please when parsing or label them as N?
 -The following files with bad labelling have been removed from original dataset: ex6.mid, ex23a.mid, ex39a.mid
+
+Other Changes:
+Last events of ex14a:
+ex14a,37,0,0,1,0,1,0,0,0,1,0,0,1,11,B_7
+ex14a,38,1,0,0,2,0,0,0,0,1,0,0,0,0,Ab_maj
+ex14a,39,0,1,0,1,0,0,0,1,0,0,1,0,10,Eb_7
+ex14a,40,1,0,0,1,0,0,0,0,2,0,0,0,8,Ab_maj
+ex14a,41,0,1,0,0,0,1,0,0,1,0,0,1,1,Db_7

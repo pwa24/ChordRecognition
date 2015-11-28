@@ -66,7 +66,7 @@ def readcsv(filePath, sid, debug):
         CL_index = 0
         for time, values in sorted(eList.items()):
             #Change currently selected chord label
-            if CL_index < len(CL) and time == CL[CL_index][0]:
+            while CL_index < len(CL) and time >= CL[CL_index][0]:
                 chordLbl = CL[CL_index][2]
                 CL_index = CL_index + 1
             x = [sid, i]
