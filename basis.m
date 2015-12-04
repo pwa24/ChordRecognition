@@ -1,4 +1,8 @@
-function F = basis(X,yt,ytm,t,S)
+function F = basis(X,yt,ytm,t,S,nt)
+
+F = m_basis(X,yt,ytm,t,S,nt);
+
+%{
 
 % X(i) = the training data (X from parseDataset())
 % yt = the current label
@@ -57,29 +61,37 @@ end
 % 3. Asserted Added Note
 % ------------------
 
-PP = [0,5,9,10,0,5,9,10,0,5,9,9];
+PP =[0,5,9,10,0,5,9,10,0,5,9,9;
+     0,5,9,11,0,5,9,10,0,5,9,10];
 
-if (X.pitch(t,mod(mod(r1+1+PP(C),12)+11,12)+1) == 1)
-    F(3) = 1;
+for i=1:2
+    if (X.pitch(t,mod(mod(r1+1+PP(i,C),12)+11,12)+1) == 1)
+        F(3) = 1;
+        if (mod(C,4) == 0) % marginally improves accuracy
+            F(3) = 0;
+        end
+    end
 end
 
 % ------------------
 % 5-9. Asserted Notes of Chord
 % ------------------
 
+%%{
+
 CT = struct('sh',[]);
 CT(1).sh = [0,4,7];
-CT(2).sh = [0,4,5,7]; % [0,4,6,7]
+CT(2).sh = [0,5,7];
 CT(3).sh = [0,4,7,9];
-CT(4).sh = [0,4,7,10];
+CT(4).sh = [0,4,7,10,11]; %for some stupid reason CM7 and CDOM7 get same label
 CT(5).sh = [0,3,7];
-CT(6).sh = [0,3,5,7];
-CT(7).sh = [0,3,7,9]; % [0,3,7,9]
-CT(8).sh = [0,3,7,10];
+CT(6).sh = []; %[0,3,5,7];
+CT(7).sh = [0,3,9]; % [0,3,7,9]
+CT(8).sh = [0,3,10];
 CT(9).sh = [0,3,6];
-CT(10).sh = [0,3,5,6];
-CT(11).sh = [0,3,6,9];
-CT(12).sh = [0,3,6,9];
+CT(10).sh = []; %[0,3,5,6]
+CT(11).sh = []; %[0,3,6,9]
+CT(12).sh = [0,3,6,9,10]; % for half diminished chord
 
 
 n_count = 0;
@@ -88,13 +100,23 @@ for i=1:size(CT(C).sh,2)
        n_count = n_count + 1;
    end
 end
-F(5 + n_count) = 1;
+
+if (C == 2 && X.pitch(t,j_mod(r1+6,12)) == 0)
+    F(5) = 1;
+else
+    F(5 + n_count) = 1;
+end
+
+%%}
 
 % ------------------
 % 4. Fully statesd
 % ------------------
     
-if (n_count == size(CT(C).sh,2))
+if (n_count ~= 0 && n_count == size(CT(C).sh,2))
+    F(4) = 1;
+end
+if (C == 4 && n_count == 4)
     F(4) = 1;
 end
 
@@ -134,6 +156,9 @@ end
 
 if (X.bass(t) == mod(mod(r1+1+PP(C),12)+11,12)+1)
     F(13) = 1;
+    if (mod(C,4) == 0)
+        F(13) = 0;
+    end
 end
 
 % ------------------
@@ -160,6 +185,7 @@ ChordChangeOnMetricalPattern = [1 0 0 0;
                                 1 1 1 1];
 
 F(14:21) = all(repmat(ChordChangeMeter, 21-14+1, 1) == ChordChangeOnMetricalPattern, 2);  
+%F(14:21) = 0;
 
 % ------------------
 % 22-43 Sucessions
@@ -222,7 +248,10 @@ switch S
         F = F(1:13);
     case 1
         F = F(14:43);
+        %F = ones(43-13, 1);
 end
+
+%}
     
 end
 
