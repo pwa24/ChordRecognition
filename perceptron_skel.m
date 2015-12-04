@@ -1,5 +1,6 @@
 % HMM PERCEPTRON
 
+<<<<<<< HEAD
 
 % partition the input by metric features and only assign added notes as
 % part of the label in cases where the added note is on the relatively
@@ -21,6 +22,12 @@ nt = size(type,2);
 [X,T] = parseDataset('jsbach_2.data',type,1);
 %[X,T] = parseDataset('jsbach_chorals_harmony.f1.data',type,1);
 %[X,T] = parseDataset('kpcorpus.f3.data',type,0);
+=======
+MAX_EPOCH = 50;
+ETA = 0.001;
+[X,T] = parseDataset(fullfile('Datasets', 'jsbach_chorals_harmony.f0'));
+%[X,T] = parseDataset(fullfile('Datasets', 'jsbach_chorals_harmony.f1');
+>>>>>>> origin/master
 
 % initialize weights to zero
 % weights used at every vertical evalu'ation and horizontal evaluation

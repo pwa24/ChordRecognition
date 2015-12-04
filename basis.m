@@ -124,7 +124,7 @@ end
 % 10. Bass is Root Note
 % ------------------
 
-if (X.bass(t) == r1+1)
+if (X.bass(t) == r1)
     F(10) = 1;
 end
 
@@ -133,11 +133,11 @@ end
 % ------------------
 
 if (C <= 4) % it's a major third
-    if (X.bass(t) == mod(mod(r1+5,12)+11,12)+1);
+    if (X.bass(t) == mod(mod(r1+5,12)+11,12));
         F(11) = 1;
     end
 else
-    if (X.bass(t) == mod(mod(r1+4,12)+11,12)+1);
+    if (X.bass(t) == mod(mod(r1+4,12)+11,12));
         F(11) = 1;
     end
 end  
@@ -146,7 +146,7 @@ end
 % 12. Bass is Fifth
 % ------------------
 
-if (X.bass(t) == mod(mod(r1+7,12)+11,12)+1);
+if (X.bass(t) == mod(mod(r1+7,12)+11,12));
    F(12) = 1; 
 end
 
@@ -154,7 +154,7 @@ end
 % 13. Bass is Added Note
 % ------------------
 
-if (X.bass(t) == mod(mod(r1+1+PP(C),12)+11,12)+1)
+if (X.bass(t) == mod(mod(r1+1+PP(C),12)+11,12))
     F(13) = 1;
     if (mod(C,4) == 0)
         F(13) = 0;

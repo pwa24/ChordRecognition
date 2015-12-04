@@ -6,6 +6,7 @@ function [X,T] = parseDataset(filename,type,mode)
 % mode == 0 : does not include meter data
 
 fileID = fopen(filename,'r');
+<<<<<<< HEAD
 if (mode == 1)
     F = textscan(fileID, '%s %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %s', 'Delimiter', ',');
     F_chord = cell2mat(cellfun(@(x) parseChord(x,type),F{17}, 'UniformOutput', 0));
@@ -15,11 +16,19 @@ else
     F_chord = cell2mat(cellfun(@(x) parseChord(x,type), F{16}, 'UniformOutput', 0));
     F_label = F{16};
 end
+=======
+F = textscan(fileID, '%s %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %s', 'Delimiter', ',');
+>>>>>>> origin/master
 fclose(fileID);
 
 F_pitch = [F{3:14}];
 F_bass = F{15};
 F_meter = F{16};
+<<<<<<< HEAD
+=======
+F_chord = cell2mat(cellfun(@(x) parseChord(x),F{17}, 'UniformOutput', 0));
+F_label = F{17};
+>>>>>>> origin/master
 
 %Divide the songs
 sidList = {};
