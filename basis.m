@@ -34,7 +34,7 @@ C = mod(yt,nt) + 1;
 
 % according to the paper  Additionally, we individuate the added notes that possibly enrich the
 % basic harmony: we handle the cases of seventh, sixth and fourth. By considering 12
-% root notes × 3 possible modes (see below) × 3 possible added notes, we obtain 108
+% root notes Ã 3 possible modes (see below) Ã 3 possible added notes, we obtain 108
 % possible labels. Does this mean they do not count the generic M, m, dim
 % cases?
 
@@ -124,7 +124,7 @@ end
 % 10. Bass is Root Note
 % ------------------
 
-if (X.bass(t) == r1)
+if (X.bass(t) == r1+1)
     F(10) = 1;
 end
 
@@ -133,11 +133,11 @@ end
 % ------------------
 
 if (C <= 4) % it's a major third
-    if (X.bass(t) == mod(mod(r1+5,12)+11,12));
+    if (X.bass(t) == mod(mod(r1+5,12)+11,12)+1);
         F(11) = 1;
     end
 else
-    if (X.bass(t) == mod(mod(r1+4,12)+11,12));
+    if (X.bass(t) == mod(mod(r1+4,12)+11,12)+1);
         F(11) = 1;
     end
 end  
@@ -146,7 +146,7 @@ end
 % 12. Bass is Fifth
 % ------------------
 
-if (X.bass(t) == mod(mod(r1+7,12)+11,12));
+if (X.bass(t) == mod(mod(r1+7,12)+11,12)+1);
    F(12) = 1; 
 end
 
@@ -154,7 +154,7 @@ end
 % 13. Bass is Added Note
 % ------------------
 
-if (X.bass(t) == mod(mod(r1+1+PP(C),12)+11,12))
+if (X.bass(t) == mod(mod(r1+1+PP(C),12)+11,12)+1)
     F(13) = 1;
     if (mod(C,4) == 0)
         F(13) = 0;
