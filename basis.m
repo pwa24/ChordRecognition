@@ -1,8 +1,8 @@
 function F = basis(X,yt,ytm,t,S,type)
 
-%F = m_basis(X,yt,ytm,t,S,nt);
+F = m_basis(X,yt,ytm,t,S,type);
 
-%%{
+%{
 VERT = 70;
 HORZ = 33;
 F = zeros(VERT+HORZ,1);
@@ -253,7 +253,7 @@ switch S
         F = F(VERT+1:VERT+HORZ);
 end
 
-%%}
+%}
     
 end
 

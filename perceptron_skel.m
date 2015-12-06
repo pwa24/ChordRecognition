@@ -9,7 +9,7 @@
 %
  
 
-MAX_EPOCH = 10;
+MAX_EPOCH = 2;
 ETA = 0.1;
 
 %type = {'M' 'M4' 'M6' 'V' 'm' 'm4' 'm6' 'm7' 'd' 'd4' 'd6' 'd7' 'hd' 'M7' 'd7b9'}; % chord labels
@@ -18,9 +18,8 @@ type = {'M' 'M4' 'M6' 'V' 'm' 'm7' 'd' 'd7'};
 %type = {'M' 'M7' 'm' 'm7' 'd' 'd7' 'hd' '7' 'd7b9'};
 nt = size(type,2);
 
-[X,T] = parseDataset('jsbach_2.data',type,1);
-%[X,T] = parseDataset('jsbach_chorals_harmony.f1.data',type,1);
-%[X,T] = parseDataset('kpcorpus.f3.data',type,0);
+[X,T] = parseDataset('Datasets/jsbach_chorals_harmony.f1',type,1);
+%[X,T] = parseDataset('Datasets/kpcorpus2.f1',type,1);
 
 % initialize weights to zero
 % weights used at every vertical evalu'ation and horizontal evaluation
@@ -29,10 +28,11 @@ VERT = 70;
 HORZ = 33;
 W = zeros(VERT+HORZ,1); % 43 basis functions used in paper
 BO = [VERT+1, VERT+HORZ];
-N = 60;%size(X,2); % number of training examples
+N = 50;%size(X,2); % number of training examples
 
 FLAG = 0;
 
+I = [1:40,51:60];
     
 for epoch=1:MAX_EPOCH
     %rp = randperm(size(Xt, 1));
@@ -40,7 +40,8 @@ for epoch=1:MAX_EPOCH
     RELATIVE = 0;
     TET = 0;
     for n_i=1:N % for each training example
-        TE = floor(min(1000,X(n_i).numEvents)); % number of events in n_ith training example (will vary)
+        ii = I(n_i);
+        TE = floor(min(1000,X(ii).numEvents)); % number of events in n_ith training example (will vary)
         %%if (TE > 80)
         %    TE = 80;
         %end
@@ -54,17 +55,18 @@ for epoch=1:MAX_EPOCH
             Hx = zeros(TE,1);
             FLAG = 1;
         else
-            Hx = carpe_diem_alg(X(n_i),W,K,TE,type,BO);
+%            Hx = T(ii).chord;
+            Hx = carpe_diem_alg(X(ii),W,K,TE,type,BO);
             %Hx = viterbi(X(n_i),W,K,TE);
             Hx = Hx - 1;
         end
         
-        CORRECT = CORRECT + sum((Hx - T(n_i).chord(1:TE))==0);
+        CORRECT = CORRECT + sum((Hx - T(ii).chord(1:TE))==0);
         fprintf('EPOCH %d:%d CORRECT %d\n',epoch,n_i,floor(CORRECT./TET * 100));
         
         % take a look at mis-labels
         % count relative minor errors
-        %%{
+        %{
         if (epoch == 2)
             for e=2:TE-1
                 if (Hx(e) ~= T(n_i).chord(e))
@@ -76,22 +78,22 @@ for epoch=1:MAX_EPOCH
                 end
             end
         end
-        %%}
+        %}
         
-        if (isequal(Hx,T(n_i).chord(1:TE)) == 0) % compare estimate (Hx) with target values
+        if (isequal(Hx,T(ii).chord(1:TE)) == 0) % compare estimate (Hx) with target values
             for t=1:TE
                 if (t > 1)
-                    F = basis(X(n_i),Hx(t),Hx(t-1),t,2,type); %Hx(t-1)
-                    FT = basis(X(n_i),T(n_i).chord(t),T(n_i).chord(t-1),t,2,type);
+                    F = basis(X(ii),Hx(t),Hx(t-1),t,2,type); %Hx(t-1)
+                    FT = basis(X(ii),T(ii).chord(t),T(ii).chord(t-1),t,2,type);
                     %FT = basis(X(n_i),T(n_i).chord(t),Hx(t-1),t,2);
                 else
-                    F = basis(X(n_i),Hx(t),1,t,2,type);
+                    F = basis(X(ii),Hx(t),1,t,2,type);
                     F(BO(1):BO(2)) = 0;
-                    FT = basis(X(n_i),T(n_i).chord(t),1,t,2,type);
+                    FT = basis(X(ii),T(ii).chord(t),1,t,2,type);
                     FT(BO(1):BO(2)) = 0;
                 end
                 
-                if (Hx(t) == T(n_i).chord(t))
+                if (Hx(t) == T(ii).chord(t))
                     W = W + ETA * FT; % F
                 else
                     W = W - ETA * F;
@@ -112,14 +114,3 @@ end
 % We repeated this test 5 times, each time with two different training sequences. We
 % obtained an average accuracy of 75.55%.
 
-CORRECT = 0;
-TET = 0;
-
-for N=51:60
-    Hx = carpe_diem_alg(X(N),W,K,X(N).numEvents);
-    Hx = Hx - 1;
-    TET = TET + X(N).numEvents;
-    CORRECT = CORRECT + sum((Hx - T(N).chord)==0);
-    COMP = [Hx, T(N).chord];
-    fprintf('validate %d : %d\n', N,CORRECT./TET);
-end
