@@ -1,8 +1,11 @@
-function F = basis(X,yt,ytm,t,S,nt)
+function F = basis(X,yt,ytm,t,S,type)
 
-F = m_basis(X,yt,ytm,t,S,nt);
+%F = m_basis(X,yt,ytm,t,S,nt);
 
-%{
+%%{
+VERT = 70;
+HORZ = 33;
+F = zeros(VERT+HORZ,1);
 
 % X(i) = the training data (X from parseDataset())
 % yt = the current label
@@ -10,11 +13,11 @@ F = m_basis(X,yt,ytm,t,S,nt);
 % t = event number
 
 %%%INTEGRATE THIS?%
-[r1 m1 a1] = getChordDetails(yt);
-[r0 m0 a0] = getChordDetails(ytm);
+[r1,m1,a1] = getChordDetails(yt,type);
+[r0,m0,a0] = getChordDetails(ytm,type);
 %%%
-F = zeros(43,1);
-nt = 12; % number of chord types (i.e maj min)
+%F = zeros(43,1);
+nt = size(type,2); % number of chord types (i.e maj min)
 C = mod(yt,nt) + 1;
 
 % input label
@@ -245,13 +248,12 @@ F(22:43) = all(ChordDistance == chordDistComp, 2);
 
 switch S
     case 0
-        F = F(1:13);
+        F = F(1:VERT);
     case 1
-        F = F(14:43);
-        %F = ones(43-13, 1);
+        F = F(VERT+1:VERT+HORZ);
 end
 
-%}
+%%}
     
 end
 
