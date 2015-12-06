@@ -3,16 +3,16 @@ MIDI & Chord labels extracted from http://www.cs.northwestern.edu/~pardo/kpcorpu
 Regex Replace:
 Get chord list: "^(.*?)_" -> ""
 Trim trailing spaces: "\s$" -> ""
-_dim.*$ -> _dim7
-_dom7.*$ -> _7
-_fdim.*$ -> _dim7
-_hdim.*$ -> _hdim7
-_maj_[0123].*$ -> _maj
-_maj_6.*$ -> _maj6
-_maj7.*$ -> _maj7
-_min_[0123].*$ -> _min
-_min_6.*$ -> _min6
-_min7.*$ -> _min7
+_dim.*$ -> _d
+_dom7.*$ -> _V
+_fdim.*$ -> _d7
+_hdim.*$ -> _d7
+_maj_[0123].*$ -> _M
+_maj_6.*$ -> _M6
+_maj7.*$ -> _V
+_min_[0123].*$ -> _m
+_min_6.*$ -> _m
+_min7.*$ -> _m7
 
 Modifications:
 -Chord labels converted to our naming convention

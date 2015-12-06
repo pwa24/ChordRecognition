@@ -2,6 +2,7 @@ import argparse
 import csv
 import subprocess
 import os
+import sys
 
 #debuging use
 def visualize(notes):
@@ -26,7 +27,7 @@ def formatNotes(notes):
         newNotes[note % 12] = newNotes[note % 12] + 1   #format 1
     return newNotes
 
-def readcsv(filePath, sid, debug):
+def readcsv(filePath, beats, sid, debug):
     with open(filePath, newline='') as file:
         #CSV -> List
         RR = list(csv.reader(file, delimiter=',', skipinitialspace=True))
@@ -59,7 +60,9 @@ def readcsv(filePath, sid, debug):
                 hold = True
                 prevTime = row[0]
             if debug: print(row)
-        eList2 = []
+        if (len(beats) != 0 and len(eList) != len(beats)):
+            print('Error: beats dont match, ' + sid)
+            return 0
         i = 1
         W = []
         chordLbl = 'N' #Default: no chord label
@@ -69,10 +72,11 @@ def readcsv(filePath, sid, debug):
             while CL_index < len(CL) and time >= CL[CL_index][0]:
                 chordLbl = CL[CL_index][2]
                 CL_index = CL_index + 1
-            x = [sid, i]
+            if debug: x = [sid, time]
+            else: x = [sid, i]
             if debug: x.extend(visualize(formatNotes(values)))
             else: x.extend(formatNotes(values))
-            #x.append(metric)
+            if (len(beats) != 0): x.append(beats[i-1])
             x.append(chordLbl)
             W.append(x)
             i = i + 1
@@ -83,6 +87,22 @@ def writecsv(filePath, mode, W):
         writer = csv.writer(file)
         writer.writerows(W)
         return
+
+def getBeats(k_filepath):
+    allBeats = []
+    noteTimes = []
+    beats = []
+    with open(k_filepath, 'r', newline='') as file:
+        for line in file:
+            l = line.split()
+            if (l[0] == 'Beat'):
+                allBeats.append([int(l[1]), int(l[2])])
+            elif (l[0] == 'TPCNote'):
+                noteTimes.append(int(l[1]))
+        for line in allBeats:
+            if line[0] in noteTimes:
+                beats.append(line[1] + 1)
+    return beats
 
 parser = argparse.ArgumentParser()
 parser.add_argument('inputPath', help='MIDI file or Dir containing MIDI files')
@@ -96,9 +116,15 @@ args = parser.parse_args()
 if os.path.isfile(args.inputPath):
     if args.inputPath.endswith('.mid'):
         fileTitle = args.inputPath.split(sep='.')[0]
-        midiToCSV = ['Midicsv.exe', args.inputPath, 'temp.csv']
-        subprocess.call(midiToCSV)
-        W = readcsv('temp.csv', fileTitle, args.debug)
+
+        beats = getBeats(fileTitle + '.k')
+        print(len(beats))
+#        beats = []
+        #Use Midicsv to convert MIDI into csv
+        subprocess.call(['Midicsv', args.inputPath, 'temp.csv'])
+
+        #Combine csv and beats data into .f1 file
+        W = readcsv('temp.csv', beats, fileTitle, args.debug)
         writecsv(args.outputFile, 'w', W)
     subprocess.call('rm temp.csv')
 #convert multiple files
@@ -108,9 +134,14 @@ elif os.path.isdir(args.inputPath):
     for file in sorted(os.listdir(args.inputPath)):
         if file.endswith('.mid'):
             fileTitle = file.split(sep='.')[0]
-            midiToCSV = ['Midicsv.exe', args.inputPath + '/' + file, 'temp.csv']
-            subprocess.call(midiToCSV)
-            W = readcsv('temp.csv', fileTitle, args.debug)
+
+            beats = getBeats(args.inputPath + '/' + fileTitle + '.k')
+            print(len(beats))
+            #Use Midicsv to convert MIDI into csv
+            subprocess.call(['Midicsv', args.inputPath + '/' + file, 'temp.csv'])
+            
+            #Combine csv and beats data into .f1 file
+            W = readcsv('temp.csv', beats, fileTitle, args.debug)
             writecsv(args.outputFile, 'a', W)
     subprocess.call('rm temp.csv')
 else:
