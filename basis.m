@@ -1,8 +1,8 @@
 function F = basis(X,yt,ytm,t,S,type)
 
-F = m_basis(X,yt,ytm,t,S,type);
+%F = m_basis(X,yt,ytm,t,S,type);
 
-%{
+%%{
 VERT = 70;
 HORZ = 33;
 F = zeros(VERT+HORZ,1);
@@ -37,7 +37,7 @@ C = mod(yt,nt) + 1;
 
 % according to the paper  Additionally, we individuate the added notes that possibly enrich the
 % basic harmony: we handle the cases of seventh, sixth and fourth. By considering 12
-% root notes Ã 3 possible modes (see below) Ã 3 possible added notes, we obtain 108
+% root notes ÃÂ 3 possible modes (see below) ÃÂ 3 possible added notes, we obtain 108
 % possible labels. Does this mean they do not count the generic M, m, dim
 % cases?
 
@@ -48,7 +48,7 @@ C = mod(yt,nt) + 1;
 % 1. Asserted Root Note
 % ------------------
 
-if (X.pitch(t, r1+1) == 1)
+if (X.pitch(t, r1+1) >= 1)
     F(1) = 1;
 end
 
@@ -56,7 +56,7 @@ end
 % 2. Asserted Root in Next Event
 % ------------------
 
-if (t+1 <= X.numEvents && X.pitch(t+1, r1+1) == 1)
+if (t+1 <= X.numEvents && X.pitch(t+1, r1+1) >= 1)
     F(2) = 1;
 end
 
@@ -64,24 +64,42 @@ end
 % 3. Asserted Added Note
 % ------------------
 
-PP =[0,5,9,10,0,5,9,10,0,5,9,9;
-     0,5,9,11,0,5,9,10,0,5,9,10];
+ChordType   = {'M' 'M4' 'M6' 'M7' 'm' 'm4' 'm6' 'm7' 'd' 'd4' 'd6' 'd7' 'hd' 'V' 'd7b9' 'N'};
+Index       = [ 1   2    3    4    5   6    7    8    9   10   11  12    13   14  15     16];
+in = Index(strcmp(ChordType,type{C}));
 
-for i=1:2
-    if (X.pitch(t,mod(mod(r1+1+PP(i,C),12)+11,12)+1) == 1)
-        F(3) = 1;
-        if (mod(C,4) == 0) % marginally improves accuracy
-            F(3) = 0;
-        end
-    end
+AddedNote   = {0, 5, 9,11, 0, 5, 9,10, 0, 5, 9, 9,10,10, 0, 0};
+THIRD       = {4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 3, 0};
+FIFTH       = {7, 7, 7, 7, 7, 7, 7, 7, 6, 6, 6, 6, 6, 7, 6, 0};
+
+CT = {  [0,4,7];    % M
+        [0,5,7];    % M4
+        [0,4,7,9];  % M6
+        [0,4,7,11]; % M7
+        [0,3,7];    % m
+        [0,3,5,7];  % m4
+        [0,3,9];    % m6
+        [0,3,7,10]; % m7
+        [0,3,6];    % d
+        [0,3,6,5];  % d4
+        [0,3,6,9];  % d6
+        [0,3,6,9];  % d7
+        [0,3,6,10]; % hd
+        [0,4,7,10]; % V
+        [0];        %
+        [0];};
+
+if (X.pitch(t,j_mod(r1+1+AddedNote{in},12)) >= 1)
+    F(3) = 1;
 end
+
 
 % ------------------
 % 5-9. Asserted Notes of Chord
 % ------------------
 
 %%{
-
+%{
 CT = struct('sh',[]);
 CT(1).sh = [0,4,7];
 CT(2).sh = [0,5,7];
@@ -95,20 +113,20 @@ CT(9).sh = [0,3,6];
 CT(10).sh = []; %[0,3,5,6]
 CT(11).sh = []; %[0,3,6,9]
 CT(12).sh = [0,3,6,9,10]; % for half diminished chord
-
+%}
 
 n_count = 0;
-for i=1:size(CT(C).sh,2)
-   if( X.pitch(t,mod(mod(CT(C).sh(i)+r1+1,12)+11,12)+1) == 1)
+for i=1:size(CT{in},2)
+   if( X.pitch(t,j_mod(CT{in}(i)+r1+1,12)) >= 1)
        n_count = n_count + 1;
    end
 end
 
-if (C == 2 && X.pitch(t,j_mod(r1+6,12)) == 0)
-    F(5) = 1;
-else
+%if (C == 2 && X.pitch(t,j_mod(r1+6,12)) == 0)
+    %F(5) = 1;
+%else
     F(5 + n_count) = 1;
-end
+%end
 
 %%}
 
@@ -116,10 +134,7 @@ end
 % 4. Fully statesd
 % ------------------
     
-if (n_count ~= 0 && n_count == size(CT(C).sh,2))
-    F(4) = 1;
-end
-if (C == 4 && n_count == 4)
+if (n_count ~= 0 && n_count == size(CT{in},2))
     F(4) = 1;
 end
 
@@ -127,7 +142,7 @@ end
 % 10. Bass is Root Note
 % ------------------
 
-if (X.bass(t) == r1+1)
+if (X.bass(t) == r1)
     F(10) = 1;
 end
 
@@ -136,11 +151,11 @@ end
 % ------------------
 
 if (C <= 4) % it's a major third
-    if (X.bass(t) == mod(mod(r1+5,12)+11,12)+1);
+    if (X.bass(t) == j_mod(r1+4,12));
         F(11) = 1;
     end
 else
-    if (X.bass(t) == mod(mod(r1+4,12)+11,12)+1);
+    if (X.bass(t) == j_mod(r1+3,12));
         F(11) = 1;
     end
 end  
@@ -149,7 +164,7 @@ end
 % 12. Bass is Fifth
 % ------------------
 
-if (X.bass(t) == mod(mod(r1+7,12)+11,12)+1);
+if (X.bass(t) == j_mod(r1+7,12));
    F(12) = 1; 
 end
 
@@ -157,10 +172,10 @@ end
 % 13. Bass is Added Note
 % ------------------
 
-if (X.bass(t) == mod(mod(r1+1+PP(C),12)+11,12)+1)
+if (X.bass(t) == j_mod(r1+AddedNote{in},12))
     F(13) = 1;
     if (mod(C,4) == 0)
-        F(13) = 0;
+        %F(13) = 0;
     end
 end
 
@@ -223,26 +238,26 @@ ChordDistance = [1 0 5 1 0;    %M 5 M
 %}        
 ChordDistance = [0 0 5 0 0;    %M 5 M
                  0 0 5 1 0;    %M 5 m
-                 0 3 5 1 0;    %M7 5 m
-                 0 3 5 0 0;    %M7 5 M
+                 3 0 5 1 0;    %V 5 m
+                 3 0 5 0 0;    %V 5 M
                  1 0 5 0 0;    %m 5 M
-                 1 0 5 0 3;    %m 5 M7
+                 1 0 5 3 0;    %m 5 V
                  1 3 5 0 0;    %m7 5 M
-                 1 3 5 0 3;    %m7 5 M7
+                 1 3 5 3 0;    %m7 5 V
                  0 0 7 0 0;    %M 7 M
-                 0 0 7 0 3;    %M 7 M7
+                 0 0 7 3 0;    %M 7 V
                  0 0 2 0 0;    %M 2 M
                  0 0 2 1 0;    %M 2 m
-                 0 0 2 0 3;    %M 2 M7
+                 0 0 2 3 0;    %M 2 V
                  1 2 2 0 0;    %m6 2 M
-                 1 2 2 0 3;    %m6 2 M7
+                 1 2 2 3 0;    %m6 2 V
                  2 0 1 0 0;    %d 1 M
                  2 0 1 1 0;    %d 1 m
                  1 0 3 0 0;    %m 3 M
                  1 0 8 0 0;    %m 8 M
                  0 0 9 1 0;    %M 9 m
                  0 0 9 1 3;    %M 9 m7
-                 0 1 0 0 3];   %M4 0 M7
+                 0 1 0 3 0];   %M4 0 V
              
 F(22:43) = all(ChordDistance == chordDistComp, 2);
 
@@ -253,7 +268,7 @@ switch S
         F = F(VERT+1:VERT+HORZ);
 end
 
-%}
+%%}
     
 end
 
