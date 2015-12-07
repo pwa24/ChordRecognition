@@ -7,35 +7,20 @@
 % M4 on the dominant --> give M label to the rest
 % M on dominant beat --> give M label to the rest ignore added notes.
 %
- 
 
-MAX_EPOCH = 2;
-ETA = 0.1;
+setup
 
-%type = {'M' 'M4' 'M6' 'V' 'm' 'm4' 'm6' 'm7' 'd' 'd4' 'd6' 'd7' 'hd' 'M7' 'd7b9'}; % chord labels
-%type = {'M' 'M4' 'M6' 'V' 'm' 'm4' 'm6' 'm7' 'd' 'd7'};
-type = {'M' 'M4' 'M6' 'V' 'm' 'm7' 'd' 'd7'};
-%type = {'M' 'M7' 'm' 'm7' 'd' 'd7' 'hd' '7' 'd7b9'};
-nt = size(type,2);
-
-[X,T] = parseDataset('Datasets/jsbach_chorals_harmony.f1',type,1);
-%[X,T] = parseDataset('Datasets/kpcorpus2.f1',type,1);
+%Indicies of X to train
+I = [1:N];
 
 % initialize weights to zero
 % weights used at every vertical evalu'ation and horizontal evaluation
-K = nt*12; % number of labels
-VERT = 70;
-HORZ = 33;
-W = zeros(VERT+HORZ,1); % 43 basis functions used in paper
-BO = [VERT+1, VERT+HORZ];
-N = 50;%size(X,2); % number of training examples
+W = zeros(VERT+HORZ,1);
 
+MAX_EPOCH = 2;
+ETA = 0.1;
 FLAG = 0;
-
-I = [1:40,51:60];
-    
 for epoch=1:MAX_EPOCH
-    %rp = randperm(size(Xt, 1));
     CORRECT = 0;
     RELATIVE = 0;
     TET = 0;
@@ -55,7 +40,6 @@ for epoch=1:MAX_EPOCH
             Hx = zeros(TE,1);
             FLAG = 1;
         else
-%            Hx = T(ii).chord;
             Hx = carpe_diem_alg(X(ii),W,K,TE,type,BO);
             %Hx = viterbi(X(n_i),W,K,TE);
             Hx = Hx - 1;
@@ -106,11 +90,3 @@ for epoch=1:MAX_EPOCH
         %W(W == (1-MIN))=0;
     end
 end
-
-% validate
-% DO : 10-fold cross validation
-% BREVE has been trained on two chorales by J.S. Bach: one in major
-% key, one in minor key. It then has been tested on 58 chorales by the same author.
-% We repeated this test 5 times, each time with two different training sequences. We
-% obtained an average accuracy of 75.55%.
-

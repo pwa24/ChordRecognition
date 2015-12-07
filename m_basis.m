@@ -1,5 +1,4 @@
 function F = m_basis(X,yt,ytm,t,S,type)
-
 % X(i) = the training data (X from parseDataset())
 % yt = the current label
 % yt-1 = the previous label

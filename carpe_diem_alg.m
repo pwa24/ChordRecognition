@@ -1,5 +1,5 @@
 % CARPE DIEM
-function yh = carpe_diem_alg(X,W,K,T,nt,BO);
+function yh = carpe_diem_alg(X,W,K,T,nt,BO)
 
 % takes any input of events and labels them using the weights learnt above
 % these two algorithms should be separated
