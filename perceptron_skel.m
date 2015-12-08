@@ -17,7 +17,7 @@ I = [1:N];
 % weights used at every vertical evalu'ation and horizontal evaluation
 W = zeros(VERT+HORZ,1);
 
-MAX_EPOCH = 2;
+MAX_EPOCH = 4;
 ETA = 0.1;
 FLAG = 0;
 for epoch=1:MAX_EPOCH
@@ -40,7 +40,7 @@ for epoch=1:MAX_EPOCH
             Hx = zeros(TE,1);
             FLAG = 1;
         else
-            Hx = carpe_diem_alg(X(ii),W,K,TE,type,BO);
+            Hx = carpe_diem_alg(X(ii),W,K,TE,type,BO,BASISTYPE);
             %Hx = viterbi(X(n_i),W,K,TE);
             Hx = Hx - 1;
         end
@@ -67,13 +67,13 @@ for epoch=1:MAX_EPOCH
         if (isequal(Hx,T(ii).chord(1:TE)) == 0) % compare estimate (Hx) with target values
             for t=1:TE
                 if (t > 1)
-                    F = basis(X(ii),Hx(t),Hx(t-1),t,2,type); %Hx(t-1)
-                    FT = basis(X(ii),T(ii).chord(t),T(ii).chord(t-1),t,2,type);
+                    F = basis(X(ii),Hx(t),Hx(t-1),t,2,type,BASISTYPE); %Hx(t-1)
+                    FT = basis(X(ii),T(ii).chord(t),T(ii).chord(t-1),t,2,type,BASISTYPE);
                     %FT = basis(X(n_i),T(n_i).chord(t),Hx(t-1),t,2);
                 else
-                    F = basis(X(ii),Hx(t),1,t,2,type);
+                    F = basis(X(ii),Hx(t),1,t,2,type,BASISTYPE);
                     F(BO(1):BO(2)) = 0;
-                    FT = basis(X(ii),T(ii).chord(t),1,t,2,type);
+                    FT = basis(X(ii),T(ii).chord(t),1,t,2,type,BASISTYPE);
                     FT(BO(1):BO(2)) = 0;
                 end
                 

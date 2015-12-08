@@ -1,7 +1,10 @@
-function F = basis(X,yt,ytm,t,S,type)
+function F = basis(X,yt,ytm,t,S,type,BASISTYPE)
 
-%F = m_basis(X,yt,ytm,t,S,type);
-F = breve_basis(X,yt,ytm,t,S,type);
-    
+if (BASISTYPE == 0)
+    F = breve_basis(X,yt,ytm,t,S,type);
+else
+    F = m_basis(X,yt,ytm,t,S,type);
+end
+
 end
 

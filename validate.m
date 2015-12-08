@@ -1,10 +1,11 @@
-function Res = validate(X,W,K,type,BO, I,T)
+function Res = validate(X,W,K,type,BO,BASISTYPE, I,T)
 %---For Carpe Diem Alg
 %X - Data
 %W - Weights (70 + 33)
 %K - Number of Labels (8 * 12)
 %type - vector of labels used (size 8)
 %BO - Size of Vert/Horiz basis vectors
+%BASISTYPE - Type of basis (0 = BREVE, 1 = other)
 %---For Validation
 %I - Indicies of data X to validate (ex. [1:10])
 %T - Test labels of X
@@ -19,7 +20,7 @@ for i = 1:N
     Res(i).numEvents = T(ii).numEvents;
     Res(i).oChords = arrayfun(@(x) m_label(x, type),T(ii).chord, 'UniformOutput', 0);
     
-    Hx = carpe_diem_alg(X(ii),W,K,X(ii).numEvents,type,BO);
+    Hx = carpe_diem_alg(X(ii),W,K,X(ii).numEvents,type,BO,BASISTYPE);
     Hx = Hx - 1;    
     
     Res(i).nChords = arrayfun(@(x) m_label(x, type),Hx, 'UniformOutput', 0);
