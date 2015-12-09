@@ -11,7 +11,7 @@
 global VERT HORZ
 
 %Indicies of X to train
-I = [1:50];
+I = [1:N];
 
 % initialize weights to zero
 % weights used at every vertical evalu'ation and horizontal evaluation

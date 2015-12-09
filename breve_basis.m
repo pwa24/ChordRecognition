@@ -7,16 +7,17 @@ global CHORD_L;
 
 VERT = 70;
 HORZ = 33;
+
+nt = size(CHORD_L,2);
 F = zeros(VERT+HORZ,1);
 
-[r1,t1,m1,a1] = getChordDetails(yt);
-[r0,t0,m0,a0] = getChordDetails(ytm);
+[r1,m1,a1] = getChordDetails(yt);
+[r0,m0,a0] = getChordDetails(ytm);
 %r = root of chord (ex. C)
-%t = type of chord (ex. CM7)
 %m = mode of chord (ex. M)
 %a = added note of chord (ex. 7)
 
-C = t1 + 1; %Current chord type index (from 1)
+C = mod(yt,nt) + 1; %Current chord type index (from 1)
 
 % ------------------
 % 1. Asserted Root Note
@@ -166,7 +167,7 @@ elseif t==1
 elseif t==X.numEvents
     ChordChangeMeter = [chordchange X.meter(t-1)>meterbnd X.meter(t)>meterbnd 0];
 end;
-    
+
 ChordChangeOnMetricalPattern = [1 0 0 0;
                                 1 0 0 1;
                                 1 0 1 0;
@@ -185,28 +186,31 @@ F(14:21) = all(repmat(ChordChangeMeter, 21-14+1, 1) == ChordChangeOnMetricalPatt
 semitoneDist = mod(abs(r1-r0),12);
 chordDistComp = repmat([m0 a0 semitoneDist m1 a1], [43-22+1, 1]);
 
-ChordDistance = [0 0 5 0 0;    %M 5 M
-                 0 0 5 1 0;    %M 5 m
-                 3 0 5 1 0;    %V 5 m
-                 3 0 5 0 0;    %V 5 M
-                 1 0 5 0 0;    %m 5 M
-                 1 0 5 3 0;    %m 5 V
-                 1 3 5 0 0;    %m7 5 M
-                 1 3 5 3 0;    %m7 5 V
-                 0 0 7 0 0;    %M 7 M
-                 0 0 7 3 0;    %M 7 V
-                 0 0 2 0 0;    %M 2 M
-                 0 0 2 1 0;    %M 2 m
-                 0 0 2 3 0;    %M 2 V
-                 1 2 2 0 0;    %m6 2 M
-                 1 2 2 3 0;    %m6 2 V
-                 2 0 1 0 0;    %d 1 M
-                 2 0 1 1 0;    %d 1 m
-                 1 0 3 0 0;    %m 3 M
-                 1 0 8 0 0;    %m 8 M
-                 0 0 9 1 0;    %M 9 m
-                 0 0 9 1 3;    %M 9 m7
-                 0 1 0 3 0];   %M4 0 V
+% m: M = 0, m = 1, d = 2, V = 3
+% a: value = added note
+
+ChordDistance = [0  0 5 0  0;    %M 5 M
+                 0  0 5 1  0;    %M 5 m
+                 3 10 5 1  0;    %V 5 m
+                 3 10 5 0  0;    %V 5 M
+                 1  0 5 0  0;    %m 5 M
+                 1  0 5 3  10;    %m 5 V
+                 1 10 5 0  0;    %m7 5 M
+                 1 10 5 3  10;    %m7 5 V
+                 0  0 7 0  0;    %M 7 M
+                 0  0 7 3  10;    %M 7 V
+                 0  0 2 0  0;    %M 2 M
+                 0  0 2 1  0;    %M 2 m
+                 0  0 2 3  10;    %M 2 V
+                 1  9 2 0  0;    %m6 2 M
+                 1  9 2 3  10;    %m6 2 V
+                 2  0 1 0  0;    %d 1 M
+                 2  0 1 1  0;    %d 1 m
+                 1  0 3 0  0;    %m 3 M
+                 1  0 8 0  0;    %m 8 M
+                 0  0 9 1  0;    %M 9 m
+                 0  0 9 1 10;    %M 9 m7
+                 0  5 0 3 10];   %M4 0 V
              
 F(22:43) = all(ChordDistance == chordDistComp, 2);
 

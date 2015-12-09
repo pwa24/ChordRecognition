@@ -1,6 +1,6 @@
-function [r, t, m, a] = getChordDetails(chordID)
-%Gets the root, type, mode, and added note of chordID
-%r,t,m ZERO INDEXED
+function [r, m, a] = getChordDetails(chordID)
+%Gets the root, mode, and added note of chordID
+%r,m ZERO INDEXED
 %a is the added note in semitones from root
 global CHORD_L CHORD_M CHORD_A;
 if (chordID < 0)
@@ -10,8 +10,9 @@ if (chordID < 0)
 end
 
 nt = size(CHORD_L,2);
-r = fix(chordID/nt);
 t = mod(chordID,nt);
+
+r = fix(chordID/nt);
 m = CHORD_M(t+1);
 a = CHORD_A(t+1);
 
