@@ -1,13 +1,12 @@
-function [X,T] = parseDataset(filename,type,mode)
-%Converts csv dataset file into training data X and labels T
+function [X,T] = parseDataset(filename)
+%Converts .f1 dataset file into training data X and labels T
 %
 %<sid, event#, C, C#, D, D#, E, F, F#, G, G#, A, A#, B, bass, metric, chord>
 
-
 fileID = fopen(filename,'r');
 F = textscan(fileID, '%s %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %s', 'Delimiter', ',');
-F_chord = cell2mat(cellfun(@(x) parseChord(x,type),F{17}, 'UniformOutput', 0));
-F_label = F{17};
+F_chord = cell2mat(cellfun(@(x) parseChord(x),F{17}, 'UniformOutput', 0));
+F_label = arrayfun(@(x) m_label(x), F_chord, 'UniformOutput', 0);
 fclose(fileID);
 
 F_pitch = [F{3:14}];
@@ -45,9 +44,7 @@ for i = 1:size(sidList,2)
     X(i).numEvents = songLength;
     X(i).pitch = F_pitch(eStart:eEnd,:);
     X(i).bass = F_bass(eStart:eEnd);
-    if (mode == 1)
-        X(i).meter = F_meter(eStart:eEnd);
-    end
+    X(i).meter = F_meter(eStart:eEnd);
     
     T(i).sid = sid;
     T(i).numEvents = songLength;

@@ -1,5 +1,6 @@
-function chordID = parseChord(chordLabel,typeLetter)
-%Parses chord string label '<Root>_<Mode><AddedNote>' to its corresponding ID
+function chordID = parseChord(chordLabel)
+%Parses chord string label '<Root>_<Type>' to its corresponding ID
+global ALLCHORDS_L CHORD_MAP CHORD_L;
 
 if (chordLabel == 'N')
     chordID = 0;
@@ -9,24 +10,22 @@ end
 rootLetter  = {'C' 'B#' 'C#' 'Db' 'D' 'D#' 'Eb' 'E' 'Fb' 'F' 'E#' 'F#' 'Gb' 'G' 'G#' 'Ab' 'A' 'A#' 'Bb' 'B' 'Cb'};
 rootNum     = [ 1   1    2    2    3   4    4    5   5    6   6    7    7    8   9    9    10  11   11   12  12];
 
-%typeLetter  = {'M' 'M4' 'M6' 'M7' 'm' 'm4' 'm6' 'm7' 'd' 'd4' 'd6' 'd7' '7'}; % add aug etc d7b9, hd
-typeNum     = (1:size(typeLetter,2));
+typeNum = 1:size(CHORD_L,2);
 
-rL = regexp(chordLabel, '[ABCDEFG#b]*', 'match');
-mL = regexp(chordLabel, '[MmdV467]*', 'match');
+chordPart = strsplit(chordLabel, '_');
+rL = chordPart(1);
+mL = chordPart(2);
 
-if (isempty(rL) || isempty(mL))
-    fprintf('Error: invalid chord label - %s \n', chordLabel);
-    chordID = 0;
-    return;
-end
+%Map chord labels to current chord alphabet map
+mL = CHORD_MAP{strcmp(ALLCHORDS_L, mL)};
 
-r = rootNum(strcmp(rootLetter,rL{1}));
-m = typeNum(strcmp(typeLetter,mL{1}));
+r = rootNum(strcmp(rootLetter,rL));
+m = typeNum(strcmp(CHORD_L,mL));
 
 chordID = size(typeNum,2)*(r-1) + (m-1);
 
 if (isempty(m) || isempty(r))
+    fprintf('Error: chord does not belong in chord alphabet (type) - %s \n', chordLabel);
     chordID = 0;
 end
 

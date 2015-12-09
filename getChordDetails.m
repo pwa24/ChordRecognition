@@ -1,28 +1,18 @@
-function [r, m, a] = getChordDetails(chordID,type)
-%Gets the root, mode, and added note of chordID in [0-143]
+function [r, t, m, a] = getChordDetails(chordID)
+%Gets the root, type, mode, and added note of chordID
+%r,t,m ZERO INDEXED
+%a is the added note in semitones from root
+global CHORD_L CHORD_M CHORD_A;
 if (chordID < 0)
     fprintf('Error: invalid chordID - %n\n', chordID);
     r = -1; m = -1; a = -1;
     return;
 end
 
-modeLetter = {'M' 'm' 'd' 'V'};
-modeNum = [0,1,2,3];
-addLetter = {'4' '6' '7'};
-addNum = [1,2,3];
-
-nt = size(type,2);
+nt = size(CHORD_L,2);
 r = fix(chordID/nt);
-
-L = type{mod(chordID,nt) + 1};
-
-m = modeNum(strcmp(modeLetter,L));
-a = addNum(strcmp(addLetter,L));
-if (isempty(a))
-    a = 0;
-end
-if (isempty(m))
-    m = 0;
-end
+t = mod(chordID,nt);
+m = CHORD_M(t+1);
+a = CHORD_A(t+1);
 
 end

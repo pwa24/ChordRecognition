@@ -1,8 +1,8 @@
 % CARPE DIEM
-function yh = carpe_diem_alg(X,W,K,T,nt,BO,BASISTYPE)
-
+function yh = carpe_diem_alg(X,W,T)
 % takes any input of events and labels them using the weights learnt above
 % these two algorithms should be separated
+global K BO;
 
 G = zeros(K, T);
 B = zeros(T, 1); % contains the values Bt
@@ -13,7 +13,7 @@ S1 = zeros(K,K,T);
 
 for k=0:K-1
     for t=1:T
-        S0(k+1,t) = W(1:BO(1)-1)' * basis(X,k,1,t,0,nt,BASISTYPE);
+        S0(k+1,t) = W(1:BO(1)-1)' * basis(X,k,1,t,0);
     end
 end
 % calculate first layer of transition weights
@@ -55,11 +55,11 @@ for t=2:T
     o_pos = 3;
     
     % algorithm 4 with yh(t_i) = yt
-    [G,yh] = alg_4(t,yh(t),B,Order,S0,S1,G,yh,yp,K,X,W,S1h,nt,BO,BASISTYPE);
+    [G,yh] = alg_4(t,yh(t),B,Order,S0,S1,G,yh,yp,X,W,S1h);
     
     while( G(yh(t),t) < B(t) + S0(yp(t),t) )
         
-        [G,yh] = alg_4(t,yp(t),B,Order,S0,S1,G,yh,yp,K,X,W,S1h,nt,BO,BASISTYPE);
+        [G,yh] = alg_4(t,yp(t),B,Order,S0,S1,G,yh,yp,X,W,S1h);
         
         if ( G(yp(t),t) > G(yh(t),t) )
             yh(t) = yp(t); % the argmax of G(yh(t_i), t_i) and G(yp, t_i)

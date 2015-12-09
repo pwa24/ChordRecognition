@@ -8,23 +8,23 @@
 % M on dominant beat --> give M label to the rest ignore added notes.
 %
 
-setup
+global VERT HORZ
 
 %Indicies of X to train
-I = [1:N];
+I = [1:50];
 
 % initialize weights to zero
 % weights used at every vertical evalu'ation and horizontal evaluation
 W = zeros(VERT+HORZ,1);
 
-MAX_EPOCH = 4;
+MAX_EPOCH = 10;
 ETA = 0.1;
 FLAG = 0;
 for epoch=1:MAX_EPOCH
     CORRECT = 0;
     RELATIVE = 0;
     TET = 0;
-    for n_i=1:N % for each training example
+    for n_i=1:size(I,2) % for each training example
         ii = I(n_i);
         TE = floor(min(1000,X(ii).numEvents)); % number of events in n_ith training example (will vary)
         %%if (TE > 80)
@@ -40,7 +40,7 @@ for epoch=1:MAX_EPOCH
             Hx = zeros(TE,1);
             FLAG = 1;
         else
-            Hx = carpe_diem_alg(X(ii),W,K,TE,type,BO,BASISTYPE);
+            Hx = carpe_diem_alg(X(ii),W,TE);
             %Hx = viterbi(X(n_i),W,K,TE);
             Hx = Hx - 1;
         end
@@ -67,13 +67,13 @@ for epoch=1:MAX_EPOCH
         if (isequal(Hx,T(ii).chord(1:TE)) == 0) % compare estimate (Hx) with target values
             for t=1:TE
                 if (t > 1)
-                    F = basis(X(ii),Hx(t),Hx(t-1),t,2,type,BASISTYPE); %Hx(t-1)
-                    FT = basis(X(ii),T(ii).chord(t),T(ii).chord(t-1),t,2,type,BASISTYPE);
+                    F = basis(X(ii),Hx(t),Hx(t-1),t,2); %Hx(t-1)
+                    FT = basis(X(ii),T(ii).chord(t),T(ii).chord(t-1),t,2);
                     %FT = basis(X(n_i),T(n_i).chord(t),Hx(t-1),t,2);
                 else
-                    F = basis(X(ii),Hx(t),1,t,2,type,BASISTYPE);
+                    F = basis(X(ii),Hx(t),1,t,2);
                     F(BO(1):BO(2)) = 0;
-                    FT = basis(X(ii),T(ii).chord(t),1,t,2,type,BASISTYPE);
+                    FT = basis(X(ii),T(ii).chord(t),1,t,2);
                     FT(BO(1):BO(2)) = 0;
                 end
                 

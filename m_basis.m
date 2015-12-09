@@ -1,21 +1,25 @@
-function F = m_basis(X,yt,ytm,t,S,type)
+function F = m_basis(X,yt,ytm,t,S)
 % X(i) = the training data (X from parseDataset())
 % yt = the current label
 % yt-1 = the previous label
 % t = event number
-
+global CHORD_L;
 %F(30) = m_prob(X,t,type,yt);
-
+type = CHORD_L;
 VERT = 70;
 HORZ = 33;
 
 nt = size(type,2);
 F = zeros(VERT+HORZ,1);
-C = mod(yt,nt) + 1;
 
-[r1,m1,a1] = getChordDetails(yt,type);
-[r0,m0,a0] = getChordDetails(ytm,type);
+[r1,t1,m1,a1] = getChordDetails(yt);
+[r0,t0,m0,a0] = getChordDetails(ytm);
+%r = root of chord (ex. C)
+%t = type of chord (ex. CM7)
+%m = mode of chord (ex. M)
+%a = added note of chord (ex. 7)
 
+C = t1 + 1; %Current chord type index (from 1)
 % ----------------------------------
 % 0. VARIOUS ANALYSIS OF INPUT NOTES
 % ----------------------------------
@@ -60,7 +64,7 @@ end
 % Asserted Added Note Matrices
 % ----------------------------
 
-ChordType   = {'M' 'M4' 'M6' 'M7' 'm' 'm4' 'm6' 'm7' 'd' 'd4' 'd6' 'd7' 'hd' 'V' 'd7b9' 'N'};
+ChordType   = {'M' 'M4' 'M6' 'M7' 'm' 'm4' 'm6' 'm7' 'd' 'd4' 'd6' 'd7' 'hd7' 'V' 'd7b9' 'N'};
 Index       = [ 1   2    3    4    5   6    7    8    9   10   11  12    13   14  15     16];
 in = Index(strcmp(ChordType,type{C}));
 

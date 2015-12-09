@@ -10,6 +10,7 @@ d6 (Essentially identical to d7)
 d7
 M4
 M6
+m4
 m6
 V
 m7
@@ -24,6 +25,7 @@ d
 d7
 M4
 M6
+(Changed m4 to m for 001606b_,75 and 001606b_,76)
 m6
 V
 m7
