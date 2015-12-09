@@ -16,8 +16,8 @@ ALLCHORDS_M = [ 0   0    0    0    3   1   1    1    2   2    2]; %Mode: 0 = M, 
 ALLCHORDS_A = [ 0   5    9    11   10  0   9    10   0   9    10]; %Added Note: in semitones
 
 %All Chords (132 labels)
-%CHORD_MAP   = ALLCHORDS_L;
-%CHORD_L     = ALLCHORDS_L;
+CHORD_MAP   = ALLCHORDS_L;
+CHORD_L     = ALLCHORDS_L;
 
 %BREVE Chords (108 labels)
 %CHORD_MAP   = {'M' 'M4' 'M6' 'V' 'V' 'm' 'm6' 'm7' 'd' 'd7' 'd7'};
@@ -28,8 +28,8 @@ ALLCHORDS_A = [ 0   5    9    11   10  0   9    10   0   9    10]; %Added Note: 
 %CHORD_L     = {'M' 'M7' 'V' 'm' 'm6' 'm7' 'd' 'd7' 'hd7'};
 
 %Simple Model (36 labels)
-CHORD_MAP   = {'M' 'M'  'M'  'M'  'M' 'm' 'm'  'm'  'd' 'd'  'd'};
-CHORD_L     = {'M' 'm' 'd'};
+%CHORD_MAP   = {'M' 'M'  'M'  'M'  'M' 'm' 'm'  'm'  'd' 'd'  'd'};
+%CHORD_L     = {'M' 'm' 'd'};
 
 
 CHORD_M = ALLCHORDS_M(ismember(ALLCHORDS_L, CHORD_L));
@@ -38,9 +38,27 @@ K = size(CHORD_L,2)*12; % number of labels
 
 %-----Dataset
 %[X,T] = parseDataset('Datasets/allchords.f1');
+
+%JS Bach
 [X,T] = parseDataset('Datasets/jsbach2.f1');
+
+%KP
 %[X,T] = parseDataset('Datasets/kp1.f1');
+
+%Combined and randomized
+%{
+[X1,T1] = parseDataset('Datasets/jsbach2.f1');
+[X2,T2] = parseDataset('Datasets/kp1.f1');
+X = [X1, X2];
+T = [T1, T2];
+R = randperm(size(X,2));
+X = X(R);
+T = T(R);
+%}
+
 N = size(X,2); % number of training examples
 
+%Indicies of X to train
+I = [1:N];
 
 

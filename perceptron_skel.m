@@ -10,14 +10,11 @@
 
 global VERT HORZ
 
-%Indicies of X to train
-I = [1:N];
-
 % initialize weights to zero
 % weights used at every vertical evalu'ation and horizontal evaluation
 W = zeros(VERT+HORZ,1);
 
-MAX_EPOCH = 10;
+MAX_EPOCH = 2;
 ETA = 0.1;
 FLAG = 0;
 for epoch=1:MAX_EPOCH
