@@ -1,43 +1,23 @@
-function F = breve_basis(X,yt,ytm,t,S,type)
+function F = breve_basis(X,yt,ytm,t,S)
 % X(i) = the training data (X from parseDataset())
 % yt = the current label
-% yt-1 = the previous label
+% % yt-1 = the previous label
 % t = event number
+global CHORD_L;
 
 VERT = 70;
 HORZ = 33;
+
+nt = size(CHORD_L,2);
 F = zeros(VERT+HORZ,1);
 
-[r1,m1,a1] = getChordDetails(yt,type);
-[r0,m0,a0] = getChordDetails(ytm,type);
+[r1,m1,a1] = getChordDetails(yt);
+[r0,m0,a0] = getChordDetails(ytm);
+%r = root of chord (ex. C)
+%m = mode of chord (ex. M)
+%a = added note of chord (ex. 7)
 
-%F = zeros(43,1);
-nt = size(type,2); % number of chord types (i.e maj min)
-C = mod(yt,nt) + 1;
-
-% input label
-% 1. c-M
-% 2. c-M4
-% 3. c-M6
-% 4. c-M7
-% 5. c-m
-% 6. c-m4
-% 7. c-m6
-% 8. c-m7
-% 9. c-d
-% 10. c-d4
-% 11. c-d6
-% 12. c-d7
-% nt + 1. c#-maj etc
-
-% according to the paper  Additionally, we individuate the added notes that possibly enrich the
-% basic harmony: we handle the cases of seventh, sixth and fourth. By considering 12
-% root notes ÃÂ 3 possible modes (see below) ÃÂ 3 possible added notes, we obtain 108
-% possible labels. Does this mean they do not count the generic M, m, dim
-% cases?
-
-% i % nt gives chord type (i.e. maj)
-% i / nt gives gives chord root (0-11) with C == 0
+C = mod(yt,nt) + 1; %Current chord type index (from 1)
 
 % ------------------
 % 1. Asserted Root Note
@@ -59,9 +39,9 @@ end
 % 3. Asserted Added Note
 % ------------------
 
-ChordType   = {'M' 'M4' 'M6' 'M7' 'm' 'm4' 'm6' 'm7' 'd' 'd4' 'd6' 'd7' 'hd' 'V' 'd7b9' 'N'};
+ChordType   = {'M' 'M4' 'M6' 'M7' 'm' 'm4' 'm6' 'm7' 'd' 'd4' 'd6' 'd7' 'hd7' 'V' 'd7b9' 'N'};
 Index       = [ 1   2    3    4    5   6    7    8    9   10   11  12    13   14  15     16];
-in = Index(strcmp(ChordType,type{C}));
+in = Index(strcmp(ChordType,CHORD_L{C}));
 
 AddedNote   = {0, 5, 9,11, 0, 5, 9,10, 0, 5, 9, 9,10,10, 0, 0};
 THIRD       = {4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 3, 0};
@@ -83,7 +63,7 @@ CT = {  [0,4,7];    % M
         [0,4,7,10]; % V
         [0];        %
         [0];};
-
+    
 if (X.pitch(t,j_mod(r1+1+AddedNote{in},12)) >= 1)
     F(3) = 1;
 end
@@ -187,7 +167,7 @@ elseif t==1
 elseif t==X.numEvents
     ChordChangeMeter = [chordchange X.meter(t-1)>meterbnd X.meter(t)>meterbnd 0];
 end;
-    
+
 ChordChangeOnMetricalPattern = [1 0 0 0;
                                 1 0 0 1;
                                 1 0 1 0;
@@ -198,7 +178,6 @@ ChordChangeOnMetricalPattern = [1 0 0 0;
                                 1 1 1 1];
 
 F(14:21) = all(repmat(ChordChangeMeter, 21-14+1, 1) == ChordChangeOnMetricalPattern, 2);  
-%F(14:21) = 0;
 
 % ------------------
 % 22-43 Sucessions
@@ -207,52 +186,31 @@ F(14:21) = all(repmat(ChordChangeMeter, 21-14+1, 1) == ChordChangeOnMetricalPatt
 semitoneDist = mod(abs(r1-r0),12);
 chordDistComp = repmat([m0 a0 semitoneDist m1 a1], [43-22+1, 1]);
 
-%{
-ChordDistance = [1 0 5 1 0;    %M 5 M
-                 1 0 5 2 0;    %M 5 m
-                 1 7 5 2 0;    %M7 5 m
-                 1 7 5 1 0;    %M7 5 M
-                 2 0 5 1 0;    %m 5 M
-                 2 0 5 1 7;    %m 5 M7
-                 2 7 5 1 0;    %m7 5 M
-                 2 7 5 1 7;    %m7 5 M7
-                 1 0 7 1 0;    %M 7 M
-                 1 0 7 1 7;    %M 7 M7
-                 1 0 2 1 0;    %M 2 M
-                 1 0 2 2 0;    %M 2 m
-                 1 0 2 1 7;    %M 2 M7
-                 2 6 2 1 0;    %m6 2 M
-                 2 6 2 1 7;    %m6 2 M7
-                 3 0 1 1 0;    %d 1 M
-                 3 0 1 2 0;    %d 1 m
-                 2 0 3 1 0;    %m 3 M
-                 2 0 8 1 0;    %m 8 M
-                 1 0 9 2 0;    %M 9 m
-                 1 0 9 2 7;    %M 9 m7
-                 1 4 0 1 7];   %M4 0 M7
-%}        
-ChordDistance = [0 0 5 0 0;    %M 5 M
-                 0 0 5 1 0;    %M 5 m
-                 3 0 5 1 0;    %V 5 m
-                 3 0 5 0 0;    %V 5 M
-                 1 0 5 0 0;    %m 5 M
-                 1 0 5 3 0;    %m 5 V
-                 1 3 5 0 0;    %m7 5 M
-                 1 3 5 3 0;    %m7 5 V
-                 0 0 7 0 0;    %M 7 M
-                 0 0 7 3 0;    %M 7 V
-                 0 0 2 0 0;    %M 2 M
-                 0 0 2 1 0;    %M 2 m
-                 0 0 2 3 0;    %M 2 V
-                 1 2 2 0 0;    %m6 2 M
-                 1 2 2 3 0;    %m6 2 V
-                 2 0 1 0 0;    %d 1 M
-                 2 0 1 1 0;    %d 1 m
-                 1 0 3 0 0;    %m 3 M
-                 1 0 8 0 0;    %m 8 M
-                 0 0 9 1 0;    %M 9 m
-                 0 0 9 1 3;    %M 9 m7
-                 0 1 0 3 0];   %M4 0 V
+% m: M = 0, m = 1, d = 2, V = 3
+% a: value = added note
+
+ChordDistance = [0  0 5 0  0;    %M 5 M
+                 0  0 5 1  0;    %M 5 m
+                 3 10 5 1  0;    %V 5 m
+                 3 10 5 0  0;    %V 5 M
+                 1  0 5 0  0;    %m 5 M
+                 1  0 5 3  10;    %m 5 V
+                 1 10 5 0  0;    %m7 5 M
+                 1 10 5 3  10;    %m7 5 V
+                 0  0 7 0  0;    %M 7 M
+                 0  0 7 3  10;    %M 7 V
+                 0  0 2 0  0;    %M 2 M
+                 0  0 2 1  0;    %M 2 m
+                 0  0 2 3  10;    %M 2 V
+                 1  9 2 0  0;    %m6 2 M
+                 1  9 2 3  10;    %m6 2 V
+                 2  0 1 0  0;    %d 1 M
+                 2  0 1 1  0;    %d 1 m
+                 1  0 3 0  0;    %m 3 M
+                 1  0 8 0  0;    %m 8 M
+                 0  0 9 1  0;    %M 9 m
+                 0  0 9 1 10;    %M 9 m7
+                 0  5 0 3 10];   %M4 0 V
              
 F(22:43) = all(ChordDistance == chordDistComp, 2);
 

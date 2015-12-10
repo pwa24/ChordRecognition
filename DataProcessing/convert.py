@@ -137,6 +137,7 @@ elif os.path.isdir(args.inputPath):
 
             beats = getBeats(args.inputPath + '/' + fileTitle + '.k')
             print(len(beats))
+#            beats = []
             #Use Midicsv to convert MIDI into csv
             subprocess.call(['Midicsv', args.inputPath + '/' + file, 'temp.csv'])
             
