@@ -66,11 +66,19 @@ Analysis of harmonic structure in music often starts with labelling every chord 
 
 \section{Introduction}
 
-Our system takes MIDI input re-encoded as a list of events, each consisting of a set of tones. We aim to assign each event with a chord label. A chord is a set of simultaneously played notes and a chord label posses as information the root note and the mode. In our dataset, we use boolean vectors in $\{0,1\}^{12}$ to represent the presence or absence of the twelve distinct pitch classes. The lowest note is encoded using an integer. Relative accent is encoded using an integer of value 1 to 5 where lower number denotes less accented event and higher number denotes more accented event.
+Our system takes a MIDI input re-encoded as a list of events. Each event contains information of the frequency of the twelve pitch classes played, the bass note, and its meter (relative accent). We aim to assign each event a chord label - a set of simultaneously played notes.
 
-We also used chord progression and accents as contextual information. Together, they form the framework for designing and evaluating a set of Boolean basis functions.
+We also take into consideration chord progressions and accents as contextual information. We consider an event as “vertical” information and the events that occur around it as “horizontal” information. Together, they form the framework for evaluating our features functions.
 
-We approach the chord recognition problem as a sequential supervised learning (SSL) problem. Sequential learning can be understood as a path-finding problem over a layered-graph. Here, the vertices represent chord labels which are weighted using vertical basis functions, while transitional weights are calculated using horizontal basis functions. With $T$ layers, and $K$ labels, we have a $T \times K$ graph. Finding the optimal path can be solved using Viterbi algorithm, yielding a complexity of $O(TK^2)$. However, our system uses CarpeDiem algorithm, solving the problem in $O(TK\log(k))$.
+We approach the chord recognition problem as a sequential supervised learning (SSL) problem. For each training piece $m$, we denote the form $(X_m, Y_m)$, where $X_m = (x_{m,1},\ldots,x_{m,Tm})$ is a sequence of $T_m$ events and $Y_m = (y_{m,1},\ldots,y_{m,Tm})$, are the corresponding chord labels. Using the HMPerceptron model, we obtain a classifier H that given a new sequence of pieces $X$, predicts the corresponding chord labels $Y=H(X)$ as follows [5]:
+
+\begin{equation}
+  H(X) = \arg\max_{Y'={y'_1\ldots y'_T}}\sum_t^{}\sum_s^{}\mathbf{w}_s\phi_s(X,y'_t,y'_{t-1})
+\end{equation}
+
+where $\phi_s$ are boolean feature functions of the sequence of events X and the previous and current labels.
+
+Finding the classifier H is essentially a path-finding problem over a layered-graph. Here, the vertices represent chord labels which are weighted using vertical basis functions, while transitional weights are calculated using horizontal basis functions. With $T$ layers, and $K$ labels, we have a $T \times K$ graph. Finding the optimal path can be solved using Viterbi algorithm, yielding a complexity of $\Theta(TK^2)$. However, our system uses CarpeDiem algorithm, solving the problem in $\Theta(TKlog(k))$.
 
 \section{Model Formulation}
 
@@ -135,7 +143,7 @@ Notably, accuracy was slightly improved when reporting the asserted-degree of yt
     \multirow{6}{*}{\parbox{4.5cm}{\centering Contextually Relevant Asserted-notes for each Chord Degree \{ root, third, fifth, added note \}}}
     & 6 & root of $y_t$ in $x_t \cap x_{t - 1} given x_{t - 1} in x_{R}$ \\ \cline{2-3}
     & $\dots$ & $\ldots$ \\ \cline{2-3}
-    & 10 & root of $y_t$ in $x_t \cap x_{t - 1} given x_{t - 1} in x_{R}$ \\ \cline{2-3}
+    & 10 & root of $y_t$ in $x_t \cap x_{t + 1} given x_{t + 1} in x_{R}$ \\ \cline{2-3}
     & $\ldots$ & $\ldots$ \\ \cline{2-3}
     & 14 & root of $y_t$ in $x_s$ \\ \cline{2-3}
     & $\ldots$ & $\ldots$ \\
