@@ -64,7 +64,7 @@ Address \\
 \maketitle
 
 \begin{abstract}
-Analysis of harmonic structure in music often starts with labelling every chord in a musical piece. A system for performing chord recognition is very useful for harmonic analysis and for applications such as music search, music similarity identification and music composition. In this report, we present CHORDR, an improved model for automatic chord recognition based on BREVE’s HMPerceptron model [5]. We compare our results validated on a corpus of chorales from JS Bach and various other classical compositions.
+Analysis of harmonic structure in music often starts with labelling every chord in a musical piece. A system for performing chord recognition is very useful for harmonic analysis and for applications such as music search, music similarity identification and music composition. In this report, we present CHORDR, an improved model for automatic chord recognition based on BREVE’s HMPerceptron model \cite{breve}. We compare our results validated on a corpus of chorales from JS Bach and various other classical compositions.
 \end{abstract}
 
 \section{Introduction}
@@ -73,7 +73,7 @@ Our system takes a MIDI input re-encoded as a list of events. Each event contain
 
 We also take into consideration chord progressions and accents as contextual information. We consider an event as “vertical” information and the events that occur around it as “horizontal” information. Together, they form the framework for evaluating our features functions.
 
-We approach the chord recognition problem as a sequential supervised learning (SSL) problem. For each training piece $m$, we denote the form $(X_m, Y_m)$, where $X_m = (x_{m,1},\ldots,x_{m,Tm})$ is a sequence of $T_m$ events and $Y_m = (y_{m,1},\ldots,y_{m,Tm})$, are the corresponding chord labels. Using the HMPerceptron model, we obtain a classifier H that given a new sequence of pieces $X$, predicts the corresponding chord labels $Y=H(X)$ as follows [5]:
+We approach the chord recognition problem as a sequential supervised learning (SSL) problem. For each training piece $m$, we denote the form $(X_m, Y_m)$, where $X_m = (x_{m,1},\ldots,x_{m,Tm})$ is a sequence of $T_m$ events and $Y_m = (y_{m,1},\ldots,y_{m,Tm})$, are the corresponding chord labels. Using the HMPerceptron model, we obtain a classifier H that given a new sequence of pieces $X$, predicts the corresponding chord labels $Y=H(X)$ as follows \cite{breve}:
 
 \begin{equation}
   H(X) = \arg\max_{Y'={y'_1\ldots y'_T}}\sum_t^{}\sum_s^{}\mathbf{w}_s\phi_s(X,y'_t,y'_{t-1})
@@ -85,7 +85,7 @@ Finding the classifier H is essentially a path-finding problem over a layered-gr
 
 \section{Model Formulation}
 
-BREVE’s CarpeDiem path-finding algorithm [6] is already highly efficient and we don’t think it needs further improvement. However, we found the original 43 feature functions lacking in functionality. We first describe the problems of BREVE’s feature functions and then present our improvements through CHORDR’s feature functions. We denote the current event with $x_t$, and the currently predicted label with $y_t$.
+BREVE’s CarpeDiem path-finding algorithm \cite{carpediem} is already highly efficient and we don’t think it needs further improvement. However, we found the original 43 feature functions lacking in functionality. We first describe the problems of BREVE’s feature functions and then present our improvements through CHORDR’s feature functions. We denote the current event with $x_t$, and the currently predicted label with $y_t$.
 
 \subsection{A critique of BREVE's Feature Functions}
 
@@ -316,9 +316,9 @@ Notably, accuracy was slightly improved when reporting the asserted-degree of $y
 
 \subsection{Datasets}
 
-We evaluated our chord recognition algorithm and compared the results using BREVE and CHORDR basis functions on two datasets: the JS Bach Chorales[1], and a subset of pieces from the Kostka-Payne (KP) corpus [2]. JSBach contained 60 pieces of the same musical style and composer, totalling 5665 events. KP contained 29 pieces of various classical composers with differences in style, totalling 2273 events. Both datasets contained 108 unique chord labels, however, not all the same. The union of both chord label sets totalled 132 unique chord labels.
+We evaluated our chord recognition algorithm and compared the results using BREVE and CHORDR basis functions on two datasets: the JS Bach Chorales \cite{coral}, and a subset of pieces from the Kostka-Payne (KP) corpus \cite{kpcorpus}. JSBach contained 60 pieces of the same musical style and composer, totalling 5665 events. KP contained 29 pieces of various classical composers with differences in style, totalling 2273 events. Both datasets contained 108 unique chord labels, however, not all the same. The union of both chord label sets totalled 132 unique chord labels.
 
-We constructed the KP dataset by using a MIDI to CSV extraction tool [3] to obtain the pitch classes and chord labels (annotated by an expert) from the MIDI files. The meter attributes were obtained using Melisma’s meter analyzer [4]. The results were then formatted to be consistent with the JSBach dataset.
+We constructed the KP dataset by using a MIDI to CSV extraction tool \cite{midicsv} to obtain the pitch classes and chord labels (annotated by an expert) from the MIDI files. The meter attributes were obtained using Melisma’s meter analyzer \cite{mitpress}. The results were then formatted to be consistent with the JSBach dataset.
 
 \subsection{Test}
 
@@ -372,5 +372,54 @@ Figure (ANALYSIS): Visualization of some misclassifications on 000106b\_ of JSBa
 \section{Conclusion}
 
 Based on our experiments, CHORDR is an improvement in chord recognition, increasing the classification accuracy from 65\% to 79\% when compared to our implementation of BREVE on the JS Bach dataset. This was an average increase in accuracy of 17\% across all datasets we tested on. In general, this discriminative hidden markov model allows more flexibility in the design of its feature functions through the incorporation of musical analysis. On the other hand, the hidden markov model is limited to information between adjacent layers, therefore losing some of the knowledge involved in complex chord progressions. Any further improvement to the accuracy would likely require to take into account more layers via higher order markov models or bayesian networks.
+
+\begin{thebibliography}{9}
+
+% 5 from google doc
+\bibitem{breve}
+  D. Radicioni and R. Esposito,
+  \emph{BREVE: An HMPerceptron-Based Chord Recognition System},
+  Advances In Music Retrieval,
+  2010.
+
+% 6 from google doc
+
+\bibitem{carpediem}
+  D. Radicioni and R. Esposito,
+  \emph{CarpeDiem: Optimizing the Viterbi Algorithm and Application to Supervised Sequential Learning}
+  Journal of Machine Learning Research,
+  2009
+
+% 1 from google doc
+\bibitem{coral}
+  D. Radicioni and R. Esposito,
+  \emph{UCI Machine Learning Repository: Bach Choral Harmony Data Set},
+  Archive.ics.uci.edu,
+  [Online]. Available: https://archive.ics.uci.edu/ml/datasets/Bach+Choral+Harmony. [Accessed 10-Dec-2015]
+  2014.
+
+% 2 from google doc
+
+\bibitem{kpcorpus}
+  P. Bryan,
+  \emph{KPCorpus},
+  Cs.northwestern.edu. [Online]. Available: http://www.cs.northwestern.edu/~pardo/kpcorpus.htm. [Accessed: 10- Dec- 2015].
+
+% 3 from google doc
+
+\bibitem{midicsv}
+  J. Walker,
+  \emph{MIDICSV: Convert MIDI File to and from CSV},
+  Fourmilab.ch. [Online]. Available: http://www.fourmilab.ch/webtools/midicsv/. [Accessed: 10- Dec- 2015],
+  2015
+
+% 4 from google doc
+\bibitem{mitpress}
+  D, Temperley,
+  The Cognition of Basic Musical Structures,
+  MIT Press, Cambridge, MASS,
+  2014.
+
+\end{thebibliography}
 
 \end{document}
