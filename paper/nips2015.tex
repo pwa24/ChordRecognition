@@ -8,7 +8,7 @@
 %\documentstyle[nips14submit_09,times,art10]{article} % For LaTeX 2.09
 
 
-\title{Chord Recognition}
+\title{CHORDR: Hidden-Markov-Perceptron for Chord Recognition}
 
 
 \author{
@@ -61,7 +61,7 @@ Address \\
 \maketitle
 
 \begin{abstract}
-Analysis of harmonic structure often starts with labelling every chord in a musical piece. An automatic system for performing chord recognition is very useful for harmonic analysis and for applications such as music search, music similarity identification and music composition. In this report, we describe the use of a hidden-markov perceptron model for chord recognition. Tonal harmony analysis, however, is a sophisticated task and contextual information is needed for accurate chord recognition.
+Analysis of harmonic structure in music often starts with labelling every chord in a musical piece. A system for performing chord recognition is very useful for harmonic analysis and for applications such as music search, music similarity identification and music composition. In this report, we present CHORDR, an improved model for automatic chord recognition based on BREVE’s HMPerceptron model [5]. We compare our results validated on a corpus of chorales from JS Bach and various other classical compositions.
 \end{abstract}
 
 \section{Introduction}
@@ -255,17 +255,48 @@ Notably, accuracy was slightly improved when reporting the asserted-degree of yt
     % Row 9
 
     & $\ldots$ & $\ldots$ &
-    & $\ldots$ & $\ldots$ \\ \cline{2-3}\cline{5-6}
+    & $44 + K$ & third of $y_t$ is bass note of $x_t$ \\ \cline{2-3}\cline{5-6}
 
     % Row 10
 
-    & 14 & &
-    & $44 + K$ & \\ \cline{2-3}\cline{5-6}
+    & 14 & root of $y_t$ in $x_S$ &
+    & $45 + K$ & fifth of $y_t$ is bass note of $x_t$ \\ \cline{2-3}\cline{5-6}
 
     % Row 11
 
-    & & &
-    & $45 + K$ &
+    & $\ldots$ & $\ldots$ &
+    & $46 + K$ &  seventh of $yt$ is bass note of xt \\ \cline{1-3}\cline{5-6}
+
+    % Row 12
+
+    \multirow{2}{*}{\parbox{3.5cm}{\centering Root in Context Regardless of Relevance}}
+
+    & 18 & root of $y_t$ in $x_{t-1}$  &
+    & $47 + K$ & root of $y_t$ is bass note of $x_{t+1}$ \\ \cline{2-3}\cline{5-6}
+
+    % Row 13
+
+    & 19 & fifth of $y_t$ is bass note of $x_{t+1}$  &
+    & $48 + K$ & fifth of $y_t$ is bass note of $x_{t+1}$ \\ \cline{1-3}\cline{5-6}
+
+    % Row 14
+
+    \multirow{3}{*}{\parbox{3.5cm}{\centering Completely Stated Chords}}
+
+    & 20 & all notes in $y_t$ are in $x_t$ &
+    & $49 + K$ & root of $y_t$ in $x_{t}$ \\ \cline{2-3}\cline{5-6}
+
+    % Row 15
+
+    & 21 & all notes in $y_t$ are in $x_R$ &
+    & $50 + K$ & \\ \cline{2-6}
+
+    % Row 16
+
+    & 22 & all notes in $y_t$ are in $x_S$ &
+    & $51 + K$ &  \\ \cline{2-3}\cline{5-6}
+
+    \hline
 
   \end{tabular}
 \end{table}
