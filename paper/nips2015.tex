@@ -326,6 +326,27 @@ In a simplified model, we first tried classifying the chords with respect to the
 
 JSBach and KP were classified using their respective 108 chord labels. A combined test was also conducted on a fixed random permutation of the combined datasets using all 132 chord labels. All tests were conducted using 6 fold cross validation. Our results are summarized in figure E2.
 
+\begin{table}
+  \begin{tabular}{M{1.5cm} | M{3.5cm} M{3cm} | M{3.5cm} M{3cm}}
+    \hline
+    & \multicolumn{1}{l}{BREVE Basis Functions} & & \multicolumn{1}{l}{CHORDR Basis Functions} \\
+    \hline
+    Dataset (\# Pieces) & Simplified chord classification (M m d) & Full chord classification & Simplified chord classification (M m d) & Full chord classification \\
+
+    \hline
+
+    JSBach (60) & 73.85 & 64.46 & 84.22 & 78.56 \\
+
+    \hline
+    KP (29)  & 55.02 & 46.71 & 67.82 & 58.48 \\
+
+    \hline
+    Combined (89) & 74.45 & 59.76 & 82.09 & 69.39 \\
+
+    \hline
+  \end{tabular}
+\end{table}
+
 \section{Error Analysis}
 
 Chord recognition performed much better on the JSBach dataset compared to the KP dataset because the contents of KP contained a higher variance of chord patterns. We thought it was interesting nonetheless to experiment with a different dataset to gauge how chord recognition performed in a broader context. Classification on the combined dataset performed somewhere in between JSBach and KP. There was also a higher variance in each fold validation due to a larger set of labels being classified.
