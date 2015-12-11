@@ -2,10 +2,13 @@
 \usepackage{nips15submit_e,times}
 \usepackage{hyperref}
 \usepackage{url}
+\usepackage{multirow}
+\usepackage{array}
+\newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
 %\documentstyle[nips14submit_09,times,art10]{article} % For LaTeX 2.09
 
 
-\title{Formatting Instructions for NIPS 2015}
+\title{Chord Recognition}
 
 
 \author{
@@ -58,398 +61,213 @@ Address \\
 \maketitle
 
 \begin{abstract}
-The abstract paragraph should be indented 1/2~inch (3~picas) on both left and
-right-hand margins. Use 10~point type, with a vertical spacing of 11~points.
-The word \textbf{Abstract} must be centered, bold, and in point size 12. Two
-line spaces precede the abstract. The abstract must be limited to one
-paragraph.
+Analysis of harmonic structure often starts with labelling every chord in a musical piece. An automatic system for performing chord recognition is very useful for harmonic analysis and for applications such as music search, music similarity identification and music composition. In this report, we describe the use of a hidden-markov perceptron model for chord recognition. Tonal harmony analysis, however, is a sophisticated task and contextual information is needed for accurate chord recognition.
 \end{abstract}
 
-\section{Submission of papers to NIPS 2015}
+\section{Introduction}
 
-NIPS requires electronic submissions.  The electronic submission site is  
-\begin{center}
-   \url{http://papers.nips.cc}
-\end{center}
+Our system takes MIDI input re-encoded as a list of events, each consisting of a set of tones. We aim to assign each event with a chord label. A chord is a set of simultaneously played notes and a chord label posses as information the root note and the mode. In our dataset, we use boolean vectors in $\{0,1\}^{12}$ to represent the presence or absence of the twelve distinct pitch classes. The lowest note is encoded using an integer. Relative accent is encoded using an integer of value 1 to 5 where lower number denotes less accented event and higher number denotes more accented event.
 
-Please read carefully the
-instructions below, and follow them faithfully.
-\subsection{Style}
+We also used chord progression and accents as contextual information. Together, they form the framework for designing and evaluating a set of Boolean basis functions.
 
-Papers to be submitted to NIPS 2015 must be prepared according to the
-instructions presented here. Papers may be only up to eight pages long,
-including figures. Since 2009 an additional ninth page \textit{containing only
-cited references} is allowed. Papers that exceed nine pages will not be
-reviewed, or in any other way considered for presentation at the conference.
-%This is a strict upper bound. 
+We approach the chord recognition problem as a sequential supervised learning (SSL) problem. Sequential learning can be understood as a path-finding problem over a layered-graph. Here, the vertices represent chord labels which are weighted using vertical basis functions, while transitional weights are calculated using horizontal basis functions. With $T$ layers, and $K$ labels, we have a $T \times K$ graph. Finding the optimal path can be solved using Viterbi algorithm, yielding a complexity of $O(TK^2)$. However, our system uses CarpeDiem algorithm, solving the problem in $O(TK\log(k))$.
 
-Please note that this year we have introduced automatic line number generation
-into the style file (for \LaTeXe and Word versions). This is to help reviewers
-refer to specific lines of the paper when they make their comments. Please do
-NOT refer to these line numbers in your paper as they will be removed from the
-style file for the final version of accepted papers.
+\section{Model Formulation}
 
-The margins in 2015 are the same as since 2007, which allow for $\approx 15\%$
-more words in the paper compared to earlier years. We are also again using 
-double-blind reviewing. Both of these require the use of new style files.
+\subsection{A critique of BREVE's Feature Functions}
 
-Authors are required to use the NIPS \LaTeX{} style files obtainable at the
-NIPS website as indicated below. Please make sure you use the current files and
-not previous versions. Tweaking the style files may be grounds for rejection.
+In the following, the implemented set of basis functions are described and distinctions between BREVE and ChordRecognition are rationalized. Notably, we denote the current event with xt, and the currently predicted label with yt.
 
-%% \subsection{Double-blind reviewing}
+In BREVE, five consecutive entries in the feature vector are used to indicate exactly how many notes of yt are present in xt. Unfortunately, some chord structures contain 3 distinct notes, while others, like the dominant seventh chord, contain 4 distinct notes. Of the supported chord types, approximately half of the chord structures are comprised of 4 distinct notes, however, these chords are used less frequently. As a result, the learned weights prioritize having three notes of yt present in xt, which diminishes the discriminative power of this feature. Consider an event xt, which contains the pitch classes C, E, G, and Bb. Here, xt is a fully stated dominant seventh chord, yet it contains 3 distinct notes of $A_{m7}$, $E_{m6}$, $C_{M}$, $C_{M4}$, $C_{M6}$, $C_{M7}$, $G_{d}$, while containing 4 distinct notes of $C_{V}$. In general this feature aims to gauge the similarity between a collection of notes and a chord label, however this approach is not optimal, as it reports $C_V$ to be less likely than a number of other labels.
 
-%% This year we are doing double-blind reviewing: the reviewers will not know 
-%% who the authors of the paper are. For submission, the NIPS style file will 
-%% automatically anonymize the author list at the beginning of the paper.
+Alternatively, five consecutive entries in the feature vector are used to indicate the percentage of notes in xt which are contained in yt. Notably, the percentage is quantized into partitions each with a width of 20\%. Using this approach, the learnt weights reflect the fact that having $(80\%, 100\%]$ is the most desirable condition for a predicted label. As a result, both training error and testing error decreased using this metric.
 
-%% Please write your paper in such a way to preserve anonymity. Refer to
-%% previous work by the author(s) in the third person, rather than first
-%% person. Do not provide Web links to supporting material at an identifiable
-%% web site.
+Furthermore, the model adopted in BREVE makes the assumption that the presence of each note within a given chord structure is equally significant, when in fact this is not the case. For example, given a $C_{M7}$ chord, or any seventh chord for that matter, the presence or absence of a fifth is a very weak indicator, as it is quite common to voice seventh chords without the fifth. In contrast, the presence or absence of a seventh is extremely important, as this chord type specifically dictates its presence. With this in mind, it is somewhat surprising that Radicioni et al. have two features which indicate if the root and added note of a chord yt are present in xt, but neglect to observe the presence of a third or fifth. Additionally, it seems counterintuitive that BREVE only observes if the root of yt is present in xt+1, neglecting to consider the content of xt-1. In light of this reality, ChordRecognition reports the presence of a third and fifth.
 
-%%\subsection{Electronic submission}
-%%
-%% \textbf{THE SUBMISSION DEADLINE IS June 5, 2015. SUBMISSIONS MUST BE LOGGED BY
-%% 23:00, June 5, 2015, UNIVERSAL TIME}
+The most prominent difficulty in discerning the correct chord label is in cases where xt is contains a small number of distinct pitches. Without contextual information, it is reasonable to assert that an event containing the pitch classes C and G may represent a $C_{m}$, $C_{M}$, $G_{M4}$ or $Ab_{M7}$ chord. Quite frequently, a fully voiced chord is not sounded simultaneously, as the remaining chord tones have been stated previously or are to be stated on the following beat. In order to mitigate these uncertain circumstances, contextual analysis is necessary.
 
-%% You must enter your submission in the electronic submission form available at
-%% the NIPS website listed above. You will be asked to enter paper title, name of
-%% all authors, keyword(s), and data about the contact
-%% author (name, full address, telephone, fax, and email). You will need to
-%% upload an electronic (postscript or pdf) version of your paper.
+\subsection{Determining the Relevance of CHORDR}
 
-%% You can upload more than one version of your paper, until the
-%% submission deadline. We strongly recommended uploading your paper in
-%% advance of the deadline, so you can avoid last-minute server congestion.
-%%
-%% Note that your submission is only valid if you get an e-mail
-%% confirmation from the server. If you do not get such an e-mail, please
-%% try uploading again. 
+Unfortunately, it is not admissible to take adjacent events into consideration for every input xt, as the nature of adjacent events is only illuminating in specific circumstances. As a result, one experimented with several differing methods for determining a relevant set of events, before determining that the joint criterion of event similarity and accent trajectory was sufficient.
 
+In order to evaluate the similarity between two events xA and xB, the number of common tones, or equivalently the number of elements in xA ∩ xB, are counted. When this value surpasses a threshold, the events are considered to be similar. In most musical genres, chord changes are accented. As a result, a set of unaccented events following an accented event frequently constitutes a single chord structure. Since accents are relative to the surrounding context, a pair of events xA and xA+1 satisfy the accent condition when xA is less accented than xA+1. With regards to the music of J.S. Bach and his Baroque contemporaries, accented beats are directly derived from the metric structure. Accordingly, chord changes often occur on strong beats. Although this musical convention has decreased in prevalence since the Baroque era, chord changes are consistently accented despite the fact that these accents may be syncopated. Additionally, MIDI files contain velocity information which may be used to extrapolate the required accent information. Consequently, this analysis is not limited to the music of J.S. Bach, as it is dependent on accent trajectory not metric structure.
 
-\subsection{Retrieval of style files}
+Let xR be a set of consecutive events, necessarily including xt, which collectively satisfy the similarity condition and accent condition. Then, xR is constructed as follows. To begin, xt is the only element contained in xR. Here, xt.accent refers to the relative accent of event t, an integer in [1, 5]. Given L < t, and xL+1 ∈ xR, xL satisfies the accent condition if xL.accent > xL+1.accent and the similarity condition if |xL ∩ xt| > threshold. Given L > t, and xL-1 ∈ xR, xL satisfies the accent condition if xL.accent < xL-1.accent and the similarity condition if |xL ∩ xt| > threshold. To reiterate, xL is an eligible addition to xR if it directly precedes or follows one of the events in xR and satisfies the similarity condition and the accent condition.
 
-The style files for NIPS and other conference information are available on the World Wide Web at
-\begin{center}
-   \url{http://www.nips.cc/}
-\end{center}
-The file \verb+nips2015.pdf+ contains these 
-instructions and illustrates the
-various formatting requirements your NIPS paper must satisfy. \LaTeX{}
-users can choose between two style files:
-\verb+nips15submit_09.sty+ (to be used with \LaTeX{} version 2.09) and
-\verb+nips15submit_e.sty+ (to be used with \LaTeX{}2e). The file
-\verb+nips2015.tex+ may be used as a ``shell'' for writing your paper. All you
-have to do is replace the author, title, abstract, and text of the paper with
-your own. The file
-\verb+nips2015.rtf+ is provided as a shell for MS Word users.
-
-The formatting instructions contained in these style files are summarized in
-sections \ref{gen_inst}, \ref{headings}, and \ref{others} below.
-
-%% \subsection{Keywords for paper submission}
-%% Your NIPS paper can be submitted with any of the following keywords (more than one keyword is possible for each paper):
-
-%% \begin{verbatim}
-%% Bioinformatics
-%% Biological Vision
-%% Brain Imaging and Brain Computer Interfacing
-%% Clustering
-%% Cognitive Science
-%% Control and Reinforcement Learning
-%% Dimensionality Reduction and Manifolds
-%% Feature Selection
-%% Gaussian Processes
-%% Graphical Models
-%% Hardware Technologies
-%% Kernels
-%% Learning Theory
-%% Machine Vision
-%% Margins and Boosting
-%% Neural Networks
-%% Neuroscience
-%% Other Algorithms and Architectures
-%% Other Applications
-%% Semi-supervised Learning
-%% Speech and Signal Processing
-%% Text and Language Applications
-
-%% \end{verbatim}
-
-\section{General formatting instructions}
-\label{gen_inst}
-
-The text must be confined within a rectangle 5.5~inches (33~picas) wide and
-9~inches (54~picas) long. The left margin is 1.5~inch (9~picas).
-Use 10~point type with a vertical spacing of 11~points. Times New Roman is the
-preferred typeface throughout. Paragraphs are separated by 1/2~line space,
-with no indentation.
-
-Paper title is 17~point, initial caps/lower case, bold, centered between
-2~horizontal rules. Top rule is 4~points thick and bottom rule is 1~point
-thick. Allow 1/4~inch space above and below title to rules. All pages should
-start at 1~inch (6~picas) from the top of the page.
-
-%The version of the paper submitted for review should have ``Anonymous Author(s)'' as the author of the paper.
-
-For the final version, authors' names are
-set in boldface, and each name is centered above the corresponding
-address. The lead author's name is to be listed first (left-most), and
-the co-authors' names (if different address) are set to follow. If
-there is only one co-author, list both author and co-author side by side.
-
-Please pay special attention to the instructions in section \ref{others}
-regarding figures, tables, acknowledgments, and references.
-
-\section{Headings: first level}
-\label{headings}
-
-First level headings are lower case (except for first word and proper nouns),
-flush left, bold and in point size 12. One line space before the first level
-heading and 1/2~line space after the first level heading.
-
-\subsection{Headings: second level}
-
-Second level headings are lower case (except for first word and proper nouns),
-flush left, bold and in point size 10. One line space before the second level
-heading and 1/2~line space after the second level heading.
-
-\subsubsection{Headings: third level}
-
-Third level headings are lower case (except for first word and proper nouns),
-flush left, bold and in point size 10. One line space before the third level
-heading and 1/2~line space after the third level heading.
-
-\section{Citations, figures, tables, references}
-\label{others}
-
-These instructions apply to everyone, regardless of the formatter being used.
-
-\subsection{Citations within the text}
-
-Citations within the text should be numbered consecutively. The corresponding
-number is to appear enclosed in square brackets, such as [1] or [2]-[5]. The
-corresponding references are to be listed in the same order at the end of the
-paper, in the \textbf{References} section. (Note: the standard
-\textsc{Bib\TeX} style \texttt{unsrt} produces this.) As to the format of the
-references themselves, any style is acceptable as long as it is used
-consistently.
-
-As submission is double blind, refer to your own published work in the 
-third person. That is, use ``In the previous work of Jones et al.\ [4]'',
-not ``In our previous work [4]''. If you cite your other papers that
-are not widely available (e.g.\ a journal paper under review), use
-anonymous author names in the citation, e.g.\ an author of the
-form ``A.\ Anonymous''. 
-
-
-\subsection{Footnotes}
-
-Indicate footnotes with a number\footnote{Sample of the first footnote} in the
-text. Place the footnotes at the bottom of the page on which they appear.
-Precede the footnote with a horizontal rule of 2~inches
-(12~picas).\footnote{Sample of the second footnote}
-
-\subsection{Figures}
-
-All artwork must be neat, clean, and legible. Lines should be dark
-enough for purposes of reproduction; art work should not be
-hand-drawn. The figure number and caption always appear after the
-figure. Place one line space before the figure caption, and one line
-space after the figure. The figure caption is lower case (except for
-first word and proper nouns); figures are numbered consecutively.
-
-Make sure the figure caption does not get separated from the figure.
-Leave sufficient space to avoid splitting the figure and figure caption.
-
-You may use color figures. 
-However, it is best for the
-figure captions and the paper body to make sense if the paper is printed
-either in black/white or in color.
-\begin{figure}[h]
-\begin{center}
-%\framebox[4.0in]{$\;$}
-\fbox{\rule[-.5cm]{0cm}{4cm} \rule[-.5cm]{4cm}{0cm}}
-\end{center}
-\caption{Sample figure caption.}
-\end{figure}
-
-\subsection{Tables}
-
-All tables must be centered, neat, clean and legible. Do not use hand-drawn
-tables. The table number and title always appear before the table. See
-Table~\ref{sample-table}.
-
-Place one line space before the table title, one line space after the table
-title, and one line space after the table. The table title must be lower case
-(except for first word and proper nouns); tables are numbered consecutively.
-
-\begin{table}[t]
-\caption{Sample table title}
-\label{sample-table}
-\begin{center}
-\begin{tabular}{ll}
-\multicolumn{1}{c}{\bf PART}  &\multicolumn{1}{c}{\bf DESCRIPTION}
-\\ \hline \\
-Dendrite         &Input terminal \\
-Axon             &Output terminal \\
-Soma             &Cell body (contains cell nucleus) \\
+\begin{tabular}{ r | c c c c c c c }
+  \textbf{Events}        & $x_{28}$ & $x_{29}$ & $x_{30}$ & $x_{31}$ & $x_{32}$ & $x_{33}$ & $x_{34}$ \\
+  \textbf{Label}         & $D_{m7}$ & $D_{m7}$ & $D_{m7}$ & $G_M$ & $C_M$ & $F_M$ & $F_M$ \\
+  \textbf{Metric Accent} & 5 & 2 & 1 & 3 & 4 & 3 & 2 \\
 \end{tabular}
-\end{center}
+
+For added clarity, an excerpt from the J.S. Bach dataset will be analyzed, as shown in Table 1. Without considering similarity, $x_R = { x28, x29, x30 }$ with $28 \leq t \leq 30, x_R = \{ x_31 \}$ with $t = 31$, and $x_R = \{ x_{32}, x_{33}, x_{34} \}$ with $32 \leq t \leq 34$. Evidenced by the correct chord labels provided above, this segmentation of events is quite reasonable, however, it is evident that the similarity condition is needed to disassociate $x_{32}$ from $\{ x_{33}, x_{34} \}$.
+
+\subsection{An Overview of Feature Functions in CHORDR}
+
+Upon determining xR, several feature functions make observations on general subsets of xR. Notably, in some cases these subsets may be completely empty, and in that case such features report 0. Let xC be the set difference of xR - xt, such that xC contains all contextually relevant events with the exclusion of xt. Let xS be the set intersection of all events in xR, such that xS only contains pitch classes common to all contextually relevant events.
+
+Here, one will briefly rationalize the importance each aforementioned subset of xR. Clearly, it is important to exclusively consider the contents of xt as it is the event we are interested in labelling. Similarly, it is essential to consider the nature of xC, in accordance with the reasons for contextual analysis discussed above. With regards to xS, quite frequently this set contains very few pitch-classes, however, the presence of even a single pitch class in xS, is significant. Often this pitch class is the root or the fifth of the correct chord label. As a result, it was not beneficial to report if xS is completely stated, as this case is extremely rare and would likely only occur with xR = xt = xS. However, in that case this attribute is already captured by reporting if xt is completely stated.
+
+Notably, accuracy was slightly improved when reporting the asserted-degree of yt on pitch classes shared by xt and xt-1 or xt+1 dependent on xR membership, in contrast to reporting the asserted-degree of yt with respect to each event in xR. This is likely due to the fact that outermost events in xR are more likely to contain notes related to a previous chord structure (i.e suspensions) when xR contains more than 3 events. Since these features are dependent on the presence or absence of a single pitch class, they are quite sensitive to these unrelated pitches. Consequently, it is still relevant to consider ( xR ∩ yt ) / |xR| as the effects of these suspended pitches are significantly lessened. As an added measure, it was found beneficial to record the likelihood of a particular chord type, reported in features [43, 43 + K - 1], where K is number of label types. In the table below, the vertical feature functions are summarized, where highlighted rows signify feature functions developed independently for CHORDR. Notably, the horizontal features in BREVE were not modified.
+
+\begin{table}
+  \begin{tabular}{|M{4.5cm}|M{2cm}|M{6cm}|}
+
+    \hline
+
+    \textbf{$\mathbf{\phi}$ class} & \textbf{$\mathbf{\phi}$ number} & \textbf{$\mathbf{\phi}$ description} \\
+
+    \hline
+
+    Penalize Added Note on Weak Beats
+    & $1$ & if $X.meter(t) < X.meter(t-1)$ and $y_t$ is an added note chord type $F(1) = 0$ \\
+
+    \hline
+
+    \multirow{4}{*}{Asserted-notes}
+    & 2 & root of $y_t$ in $x_t$\\ \cline{2-3}
+    & 3 & third of $y_t$ in $x_t$ \\ \cline{2-3}
+    & 4 & fifth of $y_t$ in $x_t$ \\ \cline{2-3}
+    & 5 & added note of $y_t$ in $x_t$ \\
+
+    \hline
+
+    \multirow{6}{*}{\parbox{4.5cm}{\centering Contextually Relevant Asserted-notes for each Chord Degree \{ root, third, fifth, added note \}}}
+    & 6 & root of $y_t$ in $x_t \cap x_{t - 1} given x_{t - 1} in x_{R}$ \\ \cline{2-3}
+    & $\dots$ & $\ldots$ \\ \cline{2-3}
+    & 10 & root of $y_t$ in $x_t \cap x_{t - 1} given x_{t - 1} in x_{R}$ \\ \cline{2-3}
+    & $\ldots$ & $\ldots$ \\ \cline{2-3}
+    & 14 & root of $y_t$ in $x_s$ \\ \cline{2-3}
+    & $\ldots$ & $\ldots$ \\
+
+    \hline
+
+    \multirow{2}{*}{\parbox{4.5cm}{\centering Root in Context Regardless of Relevance}}
+    & 18 & root of $y_t$ in $x_{t - 1}$ \\ \cline{2-3}
+    & 19 & root of $y_t$ in $x_{t - 1}$ \\
+
+    \hline
+
+    \multirow{3}{*}{\parbox{4.5cm}{\centering Completely Stated Chords}}
+    & 20 & all notes of $y_t$ are in $x_t$ \\ \cline{2-3}
+    & 21 & all notes of $y_t$ are in $x_t$ \\ \cline{2-3}
+    & 22 & all notes of $y_t$ are in $x_t$ \\ \cline{2-3}
+
+    \hline
+
+    \multirow{4}{*}{\parbox{4.5cm}{\centering Percentage of Notes in $Y_t$ (For every 20\%)}}
+    & 23 & $\frac{(x_t \cap y_t)}{|x_t|}$ \\ \cline{2-3}
+    & $\ldots$ & $\ldots$ \\ \cline{2-3}
+    & 28 & $\frac{(x_R \cap y_t)}{|x_R|}$ \\ \cline{2-3}
+    & $\ldots$ & $\ldots$ \\ \cline{2-3}
+    & 33 & $\frac{(x_C \cap y_t)}{|x_C|}$ \\ \cline{2-3}
+    & $\ldots$ & $\ldots$ \\ \cline{2-3}
+    & 38 & $\frac{(x_S \cap y_t)}{|x_S|}$ \\ \cline{2-3}
+
+    \hline
+
+    \multirow{3}{*}{\parbox{4.5cm}{\centering Chord Type Likelihood (K label types)}}
+    & 43 & $y_t$ is chord type $M$ \\ \cline{2-3}
+    & 44 & $y_t$ is chord type $M4$ \\ \cline{2-3}
+    & $\ldots$ & $\ldots$ \\
+
+    \hline
+
+    \multirow{8}{*}{\parbox{4.5cm}{\centering Bass-at-degree}}
+    & 43 + K & root of $y_t$ is bass note of $x_t$ \\ \cline{2-3}
+    & 44 + K & third of $y_t$ is bass note of $x_t$ \\ \cline{2-3}
+    & 45 + K & fifth of $y_t$ is bass note of $x_t$ \\ \cline{2-3}
+    & 46 + K & seventh of $y_t$ is bass note of $x_t$ \\ \cline{2-3}
+    & 47 + K & root of $y_t$ is bass note of $x_{t+1}$ \\ \cline{2-3}
+    & 48 + K & fifth of $y_t$ is bass note of $x_{t+1}$ \\ \cline{2-3}
+    & 49 + K & root of $y_t$ is bass note of $x_{t+1}$ \\ \cline{2-3}
+    & 50 + K & fifth of $y_t$ is bass note of $x_{t+1}$ \\
+
+    \hline
+
+  \end{tabular}
 \end{table}
 
-\section{Final instructions}
-Do not change any aspects of the formatting parameters in the style files.
-In particular, do not modify the width or length of the rectangle the text
-should fit into, and do not change font sizes (except perhaps in the
-\textbf{References} section; see below). Please note that pages should be
-numbered.
 
-\section{Preparing PostScript or PDF files}
+\begin{table}
+  \begin{tabular}{|M{3.5cm}|M{0.25cm}|M{3.5cm}|M{3cm}|M{1cm}|M{3cm}|}
+    \hline
 
-Please prepare PostScript or PDF files with paper size ``US Letter'', and
-not, for example, ``A4''. The -t
-letter option on dvips will produce US Letter files.
+    \textbf{$\phi$ class} & & \textbf{$\phi$ description} & \textbf{$\phi$ class} & & \textbf{$\phi$ description} \\
 
-Fonts were the main cause of problems in the past years. Your PDF file must
-only contain Type 1 or Embedded TrueType fonts. Here are a few instructions
-to achieve this.
+    \hline
 
-\begin{itemize}
+    % Row 1
 
-\item You can check which fonts a PDF files uses.  In Acrobat Reader,
-select the menu Files$>$Document Properties$>$Fonts and select Show All Fonts. You can
-also use the program \verb+pdffonts+ which comes with \verb+xpdf+ and is
-available out-of-the-box on most Linux machines.
+    Penalize Added Note on Weak Beats
 
-\item The IEEE has recommendations for generating PDF files whose fonts
-are also acceptable for NIPS. Please see
-\url{http://www.emfield.org/icuwb2010/downloads/IEEE-PDF-SpecV32.pdf}
+    & 1 & if X.meter(t) < X.meter(t-1) and yt is an added note chord type F(1) = 0 &
 
-\item LaTeX users:
+    \multirow{4}{*}{\parbox{3cm}{\centering Percentage of Notes in Yt (For every 20\%)}}
 
-\begin{itemize}
+    & 23 & $( x_t \cap y_t ) / |x_t|$ \\ \cline{1-3}\cline{5-6}
 
-\item Consider directly generating PDF files using \verb+pdflatex+
-(especially if you are a MiKTeX user). 
-PDF figures must be substituted for EPS figures, however.
+    % Row 2
 
-\item Otherwise, please generate your PostScript and PDF files with the following commands:
-\begin{verbatim} 
-dvips mypaper.dvi -t letter -Ppdf -G0 -o mypaper.ps
-ps2pdf mypaper.ps mypaper.pdf
-\end{verbatim}
+    \multirow{4}{*}{\parbox{3.5cm}{\centering Asserted-notes}}
 
-Check that the PDF files only contains Type 1 fonts. 
-%For the final version, please send us both the Postscript file and
-%the PDF file. 
+    & 2 & root of $y_t$ in $x_t$ &
+    & 28 & $( x_R \cap y_t ) / |x_R|$ \\ \cline{2-3}\cline{5-6}
 
-\item xfig "patterned" shapes are implemented with 
-bitmap fonts.  Use "solid" shapes instead. 
-\item The \verb+\bbold+ package almost always uses bitmap
-fonts.  You can try the equivalent AMS Fonts with command
-\begin{verbatim}
-\usepackage[psamsfonts]{amssymb}
-\end{verbatim}
- or use the following workaround for reals, natural and complex: 
-\begin{verbatim}
-\newcommand{\RR}{I\!\!R} %real numbers
-\newcommand{\Nat}{I\!\!N} %natural numbers 
-\newcommand{\CC}{I\!\!\!\!C} %complex numbers
-\end{verbatim}
+    % Row 3
 
-\item Sometimes the problematic fonts are used in figures
-included in LaTeX files. The ghostscript program \verb+eps2eps+ is the simplest
-way to clean such figures. For black and white figures, slightly better
-results can be achieved with program \verb+potrace+.
-\end{itemize}
-\item MSWord and Windows users (via PDF file):
-\begin{itemize}
-\item Install the Microsoft Save as PDF Office 2007 Add-in from
-\url{http://www.microsoft.com/downloads/details.aspx?displaylang=en\&familyid=4d951911-3e7e-4ae6-b059-a2e79ed87041}
-\item Select ``Save or Publish to PDF'' from the Office or File menu
-\end{itemize}
-\item MSWord and Mac OS X users (via PDF file):
-\begin{itemize}
-\item From the print menu, click the PDF drop-down box, and select ``Save
-as PDF...''
-\end{itemize}
-\item MSWord and Windows users (via PS file):
-\begin{itemize}
-\item To create a new printer
-on your computer, install the AdobePS printer driver and the Adobe Distiller PPD file from
-\url{http://www.adobe.com/support/downloads/detail.jsp?ftpID=204} {\it Note:} You must reboot your PC after installing the
-AdobePS driver for it to take effect.
-\item To produce the ps file, select ``Print'' from the MS app, choose
-the installed AdobePS printer, click on ``Properties'', click on ``Advanced.''
-\item Set ``TrueType Font'' to be ``Download as Softfont''
-\item Open the ``PostScript Options'' folder
-\item Select ``PostScript Output Option'' to be ``Optimize for Portability''
-\item Select ``TrueType Font Download Option'' to be ``Outline''
-\item Select ``Send PostScript Error Handler'' to be ``No''
-\item Click ``OK'' three times, print your file.
-\item Now, use Adobe Acrobat Distiller or ps2pdf to create a PDF file from
-the PS file. In Acrobat, check the option ``Embed all fonts'' if
-applicable.
-\end{itemize}
+    & 3 & third of $y_t$ in $x_t$ &
+    & 33 & $( x_C \cap y_t ) / |x_C|$ \\ \cline{2-3}\cline{5-6}
 
-\end{itemize}
-If your file contains Type 3 fonts or non embedded TrueType fonts, we will
-ask you to fix it. 
+    % Row 4
 
-\subsection{Margins in LaTeX}
- 
-Most of the margin problems come from figures positioned by hand using
-\verb+\special+ or other commands. We suggest using the command
-\verb+\includegraphics+
-from the graphicx package. Always specify the figure width as a multiple of
-the line width as in the example below using .eps graphics
-\begin{verbatim}
-   \usepackage[dvips]{graphicx} ... 
-   \includegraphics[width=0.8\linewidth]{myfile.eps} 
-\end{verbatim}
-or % Apr 2009 addition
-\begin{verbatim}
-   \usepackage[pdftex]{graphicx} ... 
-   \includegraphics[width=0.8\linewidth]{myfile.pdf} 
-\end{verbatim}
-for .pdf graphics. 
-See section 4.4 in the graphics bundle documentation (\url{http://www.ctan.org/tex-archive/macros/latex/required/graphics/grfguide.ps}) 
- 
-A number of width problems arise when LaTeX cannot properly hyphenate a
-line. Please give LaTeX hyphenation hints using the \verb+\-+ command.
+    & 4 & fifth of $y_t$ in $x_t$ &
+    & 38 & $( x_S \cap y_t ) / |x_S|$ \\ \cline{2-6}
 
+    % Row 5
 
-\subsubsection*{Acknowledgments}
+    & 5 & added note of $y_t$ in $x_t$ &
 
-Use unnumbered third level headings for the acknowledgments. All
-acknowledgments go at the end of the paper. Do not include 
-acknowledgments in the anonymized submission, only in the 
-final paper. 
+    \multirow{3}{*}{\parbox{3cm}{\centering Chord Type Likelihood (K label types)}}
 
-\subsubsection*{References}
+    & 43 & $y_t$ is chord type $M$ \\ \cline{1-3}\cline{5-6}
 
-References follow the acknowledgments. Use unnumbered third level heading for
-the references. Any choice of citation style is acceptable as long as you are
-consistent. It is permissible to reduce the font size to `small' (9-point) 
-when listing the references. {\bf Remember that this year you can use
-a ninth page as long as it contains \emph{only} cited references.}
+    % Row 6
 
-\small{
-[1] Alexander, J.A. \& Mozer, M.C. (1995) Template-based algorithms
-for connectionist rule extraction. In G. Tesauro, D. S. Touretzky
-and T.K. Leen (eds.), {\it Advances in Neural Information Processing
-Systems 7}, pp. 609-616. Cambridge, MA: MIT Press.
+    \multirow{6}{*}{\parbox{3.5cm}{\centering Contextually Relevant Asserted-notes for each Chord Degree \{ root, third, fifth, added note \}}}
 
-[2] Bower, J.M. \& Beeman, D. (1995) {\it The Book of GENESIS: Exploring
-Realistic Neural Models with the GEneral NEural SImulation System.}
-New York: TELOS/Springer-Verlag.
+    & 6 & root of $y_t$ in $x_t$ ∩ $x_{t-1}$ given $x_{t-1}$ in $x_R$ &
+    & 44 & $y_t$ is chord type $M4$ \\ \cline{2-3}\cline{5-6}
 
-[3] Hasselmo, M.E., Schnell, E. \& Barkai, E. (1995) Dynamics of learning
-and recall at excitatory recurrent synapses and cholinergic modulation
-in rat hippocampal region CA3. {\it Journal of Neuroscience}
-{\bf 15}(7):5249-5262.
-}
+    % Row 7
+
+    & $\ldots$ & $\ldots$ &
+    & $\ldots$ & $\ldots$ \\ \cline{2-6}
+
+    % Row 8
+
+    & 10 & root of $y_t$ in $x_t \cap x_{t+1}$ given $x_{t+1}$ in $x_R$ &
+
+    \multirow{8}{*}{\parbox{3cm}{\centering Bass-at-degree}}
+
+    & $43 + K$ & root of $y_t$ is bass note of $x_t$ \\ \cline{2-3}\cline{5-6}
+
+    % Row 9
+
+    & $\ldots$ & $\ldots$ &
+    & $\ldots$ & $\ldots$ \\ \cline{2-3}\cline{5-6}
+
+    % Row 10
+
+    & 14 & &
+    & $44 + K$ & \\ \cline{2-3}\cline{5-6}
+
+    % Row 11
+
+    & & &
+    & $45 + K$ &
+
+  \end{tabular}
+\end{table}
 
 \end{document}
