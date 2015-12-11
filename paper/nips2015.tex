@@ -13,35 +13,6 @@
 
 \title{CHORDR: Hidden-Markov-Perceptron for Chord Recognition}
 
-
-% \author{
-% David S.~Hippocampus\thanks{ Use footnote for providing further information
-% about author (webpage, alternative address)---\emph{not} for acknowledging
-% funding agencies.} \\
-% \texttt{hippo@cs.cranberry-lemon.edu} \\
-% \And
-% Coauthor \\
-% Affiliation \\
-% Address \\
-% \texttt{email} \\
-% \AND
-% Coauthor \\
-% Affiliation \\
-% Address \\
-% \texttt{email} \\
-% \And
-% Coauthor \\
-% Affiliation \\
-% Address \\
-% \texttt{email} \\
-% \And
-% Coauthor \\
-% Affiliation \\
-% Address \\
-% \texttt{email} \\
-% (if needed)\\
-% }
-
 % The \author macro works with any number of authors. There are two commands
 % used to separate the names and addresses of multiple authors: \And and \AND.
 %
@@ -78,7 +49,7 @@ We approach the chord recognition problem as a sequential supervised learning (S
 
 where $\phi_s$ are boolean feature functions of the sequence of events X and the previous and current labels.
 
-Finding the classifier H is essentially a path-finding problem over a layered-graph. Here, the vertices represent chord labels which are weighted using vertical basis functions, while transitional weights are calculated using horizontal basis functions. With $T$ layers, and $K$ labels, we have a $T \times K$ graph. Finding the optimal path can be solved using Viterbi algorithm, yielding a complexity of $\Theta(TK^2)$. However, our system uses CarpeDiem algorithm, solving the problem in $\Theta(TKlog(k))$.
+Finding the classifier H is essentially a path-finding problem over a layered-graph. Here, the vertices represent chord labels which are weighted using vertical feature functions, while transitional weights are calculated using horizontal feature functions. With $T$ layers, and $K$ labels, we have a $T \times K$ graph. Finding the optimal path can be solved using Viterbi algorithm, yielding a complexity of $\Theta(TK^2)$. However, our system uses CarpeDiem algorithm, solving the problem in $\Theta(TKlog(k))$.
 
 \section{Model Formulation}
 
@@ -315,7 +286,7 @@ Notably, accuracy was slightly improved when reporting the asserted-degree of $y
 
 \subsection{Datasets}
 
-We evaluated our chord recognition algorithm and compared the results using BREVE and CHORDR basis functions on two datasets: the JS Bach Chorales \cite{coral}, and a subset of pieces from the Kostka-Payne (KP) corpus \cite{kpcorpus}. JSBach contained 60 pieces of the same musical style and composer, totalling 5665 events. KP contained 29 pieces of various classical composers with differences in style, totalling 2273 events. Both datasets contained 108 unique chord labels, however, not all the same. The union of both chord label sets totalled 132 unique chord labels.
+We evaluated our chord recognition algorithm and compared the results using BREVE and CHORDR feature functions on two datasets: the JS Bach Chorales \cite{coral}, and a subset of pieces from the Kostka-Payne (KP) corpus \cite{kpcorpus}. JSBach contained 60 pieces of the same musical style and composer, totalling 5665 events. KP contained 29 pieces of various classical composers with differences in style, totalling 2273 events. Both datasets contained 108 unique chord labels, however, not all the same. The union of both chord label sets totalled 132 unique chord labels.
 
 We constructed the KP dataset by using a MIDI to CSV extraction tool \cite{midicsv} to obtain the pitch classes and chord labels (annotated by an expert) from the MIDI files. The meter attributes were obtained using Melisma’s meter analyzer \cite{mitpress}. The results were then formatted to be consistent with the JSBach dataset.
 
@@ -328,7 +299,7 @@ JSBach and KP were classified using their respective 108 chord labels. A combine
 \begin{table}
   \begin{tabular}{M{1.5cm} | M{3.5cm} M{3cm} | M{3.5cm} M{3cm}}
     \hline
-    & \multicolumn{1}{l}{BREVE Basis Functions} & & \multicolumn{1}{l}{CHORDR Basis Functions} \\
+    & \multicolumn{1}{l}{BREVE feature functions} & & \multicolumn{1}{l}{CHORDR feature functions} \\
     \hline
     Dataset (\# Pieces) & Simplified chord classification (M m d) & Full chord classification & Simplified chord classification (M m d) & Full chord classification \\
 
@@ -363,7 +334,7 @@ Relative key errors occur due to the duality of relative major and minor keys in
 
 Added note misclassifications occur when a classified chord is off by a single added note. The majority of these cases are dominant 7th chords being mistaken for major chords. This is common because not only there is a one note difference in the added note of the chord between a V and a M chord, but both chords sound nearly identical from a musical perspective. Contextual information is absolutely necessary to classify these, but is often not enough, due to the interchangeability between these two chords. In our experiments, CHORDR reduced this type of error by 38\% compared to BREVE. (SEE FIGURE ANALYSIS-TOPMID)
 
-The majority of the remaining error cases were of chords mixed with passing tones identified as an inversion of a completely different chord. These errors are non trivial to resolve. Sometimes the problem is due to chord changes on unusual beats or strange rhythms of the chord progression. Other times, there is not enough specific occurrences of the chord progressions for the algorithm to learn on. The HM model is at a disadvantage here because the influence of the basis functions that govern the classification of these special cases are undermined by the more common basis functions. (SEE FIGURE ANALYSIS-TOPRIGHT)
+The majority of the remaining error cases were of chords mixed with passing tones identified as an inversion of a completely different chord. These errors are non trivial to resolve. Sometimes the problem is due to chord changes on unusual beats or strange rhythms of the chord progression. Other times, there is not enough specific occurrences of the chord progressions for the algorithm to learn on. The HM model is at a disadvantage here because the influence of the feature functions that govern the classification of these special cases are undermined by the more common feature functions. (SEE FIGURE ANALYSIS-TOPRIGHT)
 
 (Image goes here)
 
@@ -375,11 +346,11 @@ Based on our experiments, CHORDR is an improvement in chord recognition, increas
 
 \section{Contribution}
 
-Jeff: (1). Implemented HMM Perceptron with Carpe Diem [5]. (2). Implemented BREVE basis functions 1 - 13. (3). Developed the expanded set of basis functions shown in table (??) (4). Paper / Poster : Model Formulation
+Jeff: (1). Implemented HMM Perceptron with Carpe Diem [5]. (2). Implemented BREVE feature functions 1 - 13. (3). Developed the expanded set of feature functions shown in table (??) (4). Paper / Poster : Model Formulation
 
-Patrick: (1). Implemented BREVE basis functions 22 - 43. (2). Implemented MIDI to event list converter to create the KP dataset [1]-[4]. (3). Created and analyzed experiment tests. (4). Paper / Poster : Experiment / Error Analysis / Conclusion / Proofreading
+Patrick: (1). Implemented BREVE feature functions 22 - 43. (2). Implemented MIDI to event list converter to create the KP dataset [1]-[4]. (3). Created and analyzed experiment tests. (4). Paper / Poster : Experiment / Error Analysis / Conclusion / Proofreading
 
-Evangeline: (1). Drafted 1-43 basis functions and implemented 14 - 21 basis functions from BREVE. (2). Processed MAPS, McGill billboard and other datasets. (3). Prepared and printed poster. (4). Paper: Introduction/Background.
+Evangeline: (1). Drafted 1-43 feature functions and implemented 14 - 21 feature functions from BREVE. (2). Processed MAPS, McGill billboard and other datasets. (3). Prepared and printed poster. (4). Paper: Introduction/Background.
 
 Salehen: (1). Wrote the cross validation script for the KP dataset. (2). Basic analysis of experiments. (3). Paper : Introduction / Background / Formatting paper
 
