@@ -200,117 +200,117 @@ Notably, accuracy was slightly improved when reporting the asserted-degree of $y
 \end{table}
 
 
-\begin{table}
-  \begin{tabular}{|M{3.5cm}|M{0.25cm}|M{3.5cm}|M{3cm}|M{1cm}|M{3cm}|}
-    \hline
-
-    \textbf{$\phi$ class} & & \textbf{$\phi$ description} & \textbf{$\phi$ class} & & \textbf{$\phi$ description} \\
-
-    \hline
-
-    % Row 1
-
-    Penalize Added Note on Weak Beats
-
-    & 1 & if X.meter(t) < X.meter(t-1) and yt is an added note chord type F(1) = 0 &
-
-    \multirow{4}{*}{\parbox{3cm}{\centering Percentage of Notes in Yt (For every 20\%)}}
-
-    & 23 & $( x_t \cap y_t ) / |x_t|$ \\ \cline{1-3}\cline{5-6}
-
-    % Row 2
-
-    \multirow{4}{*}{\parbox{3.5cm}{\centering Asserted-notes}}
-
-    & 2 & root of $y_t$ in $x_t$ &
-    & 28 & $( x_R \cap y_t ) / |x_R|$ \\ \cline{2-3}\cline{5-6}
-
-    % Row 3
-
-    & 3 & third of $y_t$ in $x_t$ &
-    & 33 & $( x_C \cap y_t ) / |x_C|$ \\ \cline{2-3}\cline{5-6}
-
-    % Row 4
-
-    & 4 & fifth of $y_t$ in $x_t$ &
-    & 38 & $( x_S \cap y_t ) / |x_S|$ \\ \cline{2-6}
-
-    % Row 5
-
-    & 5 & added note of $y_t$ in $x_t$ &
-
-    \multirow{3}{*}{\parbox{3cm}{\centering Chord Type Likelihood (K label types)}}
-
-    & 43 & $y_t$ is chord type $M$ \\ \cline{1-3}\cline{5-6}
-
-    % Row 6
-
-    \multirow{6}{*}{\parbox{3.5cm}{\centering Contextually Relevant Asserted-notes for each Chord Degree \{ root, third, fifth, added note \}}}
-
-    & 6 & root of $y_t$ in $x_t$ ∩ $x_{t-1}$ given $x_{t-1}$ in $x_R$ &
-    & 44 & $y_t$ is chord type $M4$ \\ \cline{2-3}\cline{5-6}
-
-    % Row 7
-
-    & $\ldots$ & $\ldots$ &
-    & $\ldots$ & $\ldots$ \\ \cline{2-6}
-
-    % Row 8
-
-    & 10 & root of $y_t$ in $x_t \cap x_{t+1}$ given $x_{t+1}$ in $x_R$ &
-
-    \multirow{8}{*}{\parbox{3cm}{\centering Bass-at-degree}}
-
-    & $43 + K$ & root of $y_t$ is bass note of $x_t$ \\ \cline{2-3}\cline{5-6}
-
-    % Row 9
-
-    & $\ldots$ & $\ldots$ &
-    & $44 + K$ & third of $y_t$ is bass note of $x_t$ \\ \cline{2-3}\cline{5-6}
-
-    % Row 10
-
-    & 14 & root of $y_t$ in $x_S$ &
-    & $45 + K$ & fifth of $y_t$ is bass note of $x_t$ \\ \cline{2-3}\cline{5-6}
-
-    % Row 11
-
-    & $\ldots$ & $\ldots$ &
-    & $46 + K$ &  seventh of $yt$ is bass note of xt \\ \cline{1-3}\cline{5-6}
-
-    % Row 12
-
-    \multirow{2}{*}{\parbox{3.5cm}{\centering Root in Context Regardless of Relevance}}
-
-    & 18 & root of $y_t$ in $x_{t-1}$  &
-    & $47 + K$ & root of $y_t$ is bass note of $x_{t+1}$ \\ \cline{2-3}\cline{5-6}
-
-    % Row 13
-
-    & 19 & fifth of $y_t$ is bass note of $x_{t+1}$  &
-    & $48 + K$ & fifth of $y_t$ is bass note of $x_{t+1}$ \\ \cline{1-3}\cline{5-6}
-
-    % Row 14
-
-    \multirow{3}{*}{\parbox{3.5cm}{\centering Completely Stated Chords}}
-
-    & 20 & all notes in $y_t$ are in $x_t$ &
-    & $49 + K$ & root of $y_t$ in $x_{t}$ \\ \cline{2-3}\cline{5-6}
-
-    % Row 15
-
-    & 21 & all notes in $y_t$ are in $x_R$ &
-    & $50 + K$ & \\ \cline{2-6}
-
-    % Row 16
-
-    & 22 & all notes in $y_t$ are in $x_S$ &
-    & $51 + K$ &  \\ \cline{2-3}\cline{5-6}
-
-    \hline
-
-  \end{tabular}
-\end{table}
+% \begin{table}
+%   \begin{tabular}{|M{3.5cm}|M{0.25cm}|M{3.5cm}|M{3cm}|M{1cm}|M{3cm}|}
+%     \hline
+%
+%     \textbf{$\phi$ class} & & \textbf{$\phi$ description} & \textbf{$\phi$ class} & & \textbf{$\phi$ description} \\
+%
+%     \hline
+%
+%     % Row 1
+%
+%     Penalize Added Note on Weak Beats
+%
+%     & 1 & if X.meter(t) < X.meter(t-1) and yt is an added note chord type F(1) = 0 &
+%
+%     \multirow{4}{*}{\parbox{3cm}{\centering Percentage of Notes in Yt (For every 20\%)}}
+%
+%     & 23 & $( x_t \cap y_t ) / |x_t|$ \\ \cline{1-3}\cline{5-6}
+%
+%     % Row 2
+%
+%     \multirow{4}{*}{\parbox{3.5cm}{\centering Asserted-notes}}
+%
+%     & 2 & root of $y_t$ in $x_t$ &
+%     & 28 & $( x_R \cap y_t ) / |x_R|$ \\ \cline{2-3}\cline{5-6}
+%
+%     % Row 3
+%
+%     & 3 & third of $y_t$ in $x_t$ &
+%     & 33 & $( x_C \cap y_t ) / |x_C|$ \\ \cline{2-3}\cline{5-6}
+%
+%     % Row 4
+%
+%     & 4 & fifth of $y_t$ in $x_t$ &
+%     & 38 & $( x_S \cap y_t ) / |x_S|$ \\ \cline{2-6}
+%
+%     % Row 5
+%
+%     & 5 & added note of $y_t$ in $x_t$ &
+%
+%     \multirow{3}{*}{\parbox{3cm}{\centering Chord Type Likelihood (K label types)}}
+%
+%     & 43 & $y_t$ is chord type $M$ \\ \cline{1-3}\cline{5-6}
+%
+%     % Row 6
+%
+%     \multirow{6}{*}{\parbox{3.5cm}{\centering Contextually Relevant Asserted-notes for each Chord Degree \{ root, third, fifth, added note \}}}
+%
+%     & 6 & root of $y_t$ in $x_t$ ∩ $x_{t-1}$ given $x_{t-1}$ in $x_R$ &
+%     & 44 & $y_t$ is chord type $M4$ \\ \cline{2-3}\cline{5-6}
+%
+%     % Row 7
+%
+%     & $\ldots$ & $\ldots$ &
+%     & $\ldots$ & $\ldots$ \\ \cline{2-6}
+%
+%     % Row 8
+%
+%     & 10 & root of $y_t$ in $x_t \cap x_{t+1}$ given $x_{t+1}$ in $x_R$ &
+%
+%     \multirow{8}{*}{\parbox{3cm}{\centering Bass-at-degree}}
+%
+%     & $43 + K$ & root of $y_t$ is bass note of $x_t$ \\ \cline{2-3}\cline{5-6}
+%
+%     % Row 9
+%
+%     & $\ldots$ & $\ldots$ &
+%     & $44 + K$ & third of $y_t$ is bass note of $x_t$ \\ \cline{2-3}\cline{5-6}
+%
+%     % Row 10
+%
+%     & 14 & root of $y_t$ in $x_S$ &
+%     & $45 + K$ & fifth of $y_t$ is bass note of $x_t$ \\ \cline{2-3}\cline{5-6}
+%
+%     % Row 11
+%
+%     & $\ldots$ & $\ldots$ &
+%     & $46 + K$ &  seventh of $yt$ is bass note of xt \\ \cline{1-3}\cline{5-6}
+%
+%     % Row 12
+%
+%     \multirow{2}{*}{\parbox{3.5cm}{\centering Root in Context Regardless of Relevance}}
+%
+%     & 18 & root of $y_t$ in $x_{t-1}$  &
+%     & $47 + K$ & root of $y_t$ is bass note of $x_{t+1}$ \\ \cline{2-3}\cline{5-6}
+%
+%     % Row 13
+%
+%     & 19 & fifth of $y_t$ is bass note of $x_{t+1}$  &
+%     & $48 + K$ & fifth of $y_t$ is bass note of $x_{t+1}$ \\ \cline{1-3}\cline{5-6}
+%
+%     % Row 14
+%
+%     \multirow{3}{*}{\parbox{3.5cm}{\centering Completely Stated Chords}}
+%
+%     & 20 & all notes in $y_t$ are in $x_t$ &
+%     & $49 + K$ & root of $y_t$ in $x_{t}$ \\ \cline{2-3}\cline{5-6}
+%
+%     % Row 15
+%
+%     & 21 & all notes in $y_t$ are in $x_R$ &
+%     & $50 + K$ & \\ \cline{2-6}
+%
+%     % Row 16
+%
+%     & 22 & all notes in $y_t$ are in $x_S$ &
+%     & $51 + K$ &  \\ \cline{2-3}\cline{5-6}
+%
+%     \hline
+%
+%   \end{tabular}
+% \end{table}
 
 \section{Experiments}
 
