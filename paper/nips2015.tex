@@ -95,7 +95,7 @@ Alternatively, CHORDR uses five consecutive entries in the feature vector to ind
 
 Furthermore, the model adopted in BREVE makes the assumption that the presence of each note within a given chord structure is equally significant, when in fact this is not the case. For example, given a $C_{M7}$ chord, or any seventh chord for that matter, the presence or absence of a fifth is a very weak indicator, as it is quite common to voice seventh chords without the fifth. In contrast, the presence or absence of a seventh is extremely important, as this chord type specifically dictates its presence. With this in mind, it is somewhat surprising that Radicioni et al. have two features which indicate if the root and added note of a chord $y_t$ are present in $x_t$, but neglect to observe the presence of a third or fifth. Additionally, it seems counterintuitive that BREVE only observes if the root of yt is present in $x_{t+1}$, neglecting to consider the content of $x_{t-1}$. In light of this reality, CHORDR reports the presence of a third and fifth.
 
-The most prominent difficulty in discerning the correct chord label is in cases where xt is contains a small number of distinct pitches. Without contextual information, it is reasonable to assert that an event containing the pitch classes C and G may represent a $C_{m}$, $C_{M}$, $G_{M4}$ or $A\flat_{M7}$ chord. Quite frequently, a fully voiced chord is not sounded simultaneously, as the remaining chord tones have been stated previously or are to be stated on the following beat. In order to mitigate these uncertain circumstances, contextual analysis is necessary.
+The most prominent difficulty in discerning the correct chord label is in cases where xt is contains a small number of distinct pitches. Without contextual information, it is reasonable to assert that an event containing the pitch classes $C$ and $G$ may represent a $C_{m}$, $C_{M}$, $G_{M4}$ or $A\flat_{M7}$ chord. Quite frequently, a fully voiced chord is not sounded simultaneously, as the remaining chord tones have been stated previously or are to be stated on the following beat. In order to mitigate these uncertain circumstances, contextual analysis is necessary.
 
 \subsection{Determining the Relevance of CHORDR}
 
@@ -372,6 +372,16 @@ Figure (ANALYSIS): Visualization of some misclassifications on 000106b\_ of JSBa
 \section{Conclusion}
 
 Based on our experiments, CHORDR is an improvement in chord recognition, increasing the classification accuracy from 65\% to 79\% when compared to our implementation of BREVE on the JS Bach dataset. This was an average increase in accuracy of 17\% across all datasets we tested on. In general, this discriminative hidden markov model allows more flexibility in the design of its feature functions through the incorporation of musical analysis. On the other hand, the hidden markov model is limited to information between adjacent layers, therefore losing some of the knowledge involved in complex chord progressions. Any further improvement to the accuracy would likely require to take into account more layers via higher order markov models or bayesian networks.
+
+\section{Contribution}
+
+Jeff: (1). Implemented HMM Perceptron with Carpe Diem [5]. (2). Implemented BREVE basis functions 1 - 13. (3). Developed the expanded set of basis functions shown in table (??) (4). Paper / Poster : Model Formulation
+
+Patrick: (1). Implemented BREVE basis functions 22 - 43. (2). Implemented MIDI to event list converter to create the KP dataset [1]-[4]. (3). Created and analyzed experiment tests. (4). Paper / Poster : Experiment / Error Analysis / Conclusion / Proofreading
+
+Evangeline: (1). Drafted 1-43 basis functions and implemented 14 - 21 basis functions from BREVE. (2). Processed MAPS, McGill billboard and other datasets. (3). Prepared and printed poster. (4). Paper: Introduction/Background.
+
+Salehen: (1). Wrote the cross validation script for the KP dataset. (2). Basic analysis of experiments. (3). Paper : Introduction / Background / Formatting paper
 
 \begin{thebibliography}{9}
 
