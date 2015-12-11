@@ -4,6 +4,7 @@
 \usepackage{url}
 \usepackage{multirow}
 \usepackage{array}
+\usepackage{amsmath}
 \newcolumntype{M}[1]{>{\centering\arraybackslash}m{#1}}
 %\documentstyle[nips14submit_09,times,art10]{article} % For LaTeX 2.09
 
@@ -96,11 +97,11 @@ The most prominent difficulty in discerning the correct chord label is in cases 
 
 \subsection{Determining the Relevance of CHORDR}
 
-Unfortunately, it is not admissible to take adjacent events into consideration for every input xt, as the nature of adjacent events is only illuminating in specific circumstances. Upon experimenting with several methods for determining a relevant set of events, the joint criterion of event similarity and accent trajectory was determined to be sufficient.
+Unfortunately, it is not admissible to take adjacent events into consideration for every input $x_t$, as the nature of adjacent events is only illuminating in specific circumstances. Upon experimenting with several methods for determining a relevant set of events, the joint criterion of event similarity and accent trajectory was determined to be sufficient.
 
-In order to evaluate the similarity between two events xA and xB, the number of common tones, or equivalently the number of elements in xA ∩ xB, are counted. When this value surpasses a threshold, the events are considered to be similar. In most musical genres, chord changes are accented. As a result, a set of unaccented events following an accented event frequently constitutes a single chord structure. Since accents are relative to the surrounding context, a pair of events xA and xA+1 satisfy the accent condition when xA is less accented than xA+1. With regards to the music of J.S. Bach and his Baroque contemporaries, accented beats are directly derived from the metric structure. Accordingly, chord changes often occur on strong beats. Although this musical convention has decreased in prevalence since the Baroque era, chord changes are consistently accented despite the fact that these accents may be syncopated. Additionally, MIDI files contain velocity information which may be used to extrapolate the required accent information. Consequently, this analysis is not limited to the music of J.S. Bach, as it is dependent on accent trajectory not metric structure.
+In order to evaluate the similarity between two events $x_A$ and $x_B$, the number of common tones, or equivalently the number of elements in $x_A \cap x_B$, are counted. When this value surpasses a threshold, the events are considered to be similar. In most musical genres, chord changes are accented. As a result, a set of unaccented events following an accented event frequently constitutes a single chord structure. Since accents are relative to the surrounding context, a pair of events $x_A$ and $x_A+1$ satisfy the accent condition when $x_A$ is less accented than $x_{A+1}$. With regards to the music of J.S. Bach and his Baroque contemporaries, accented beats are directly derived from the metric structure. Accordingly, chord changes often occur on strong beats. Although this musical convention has decreased in prevalence since the Baroque era, chord changes are consistently accented despite the fact that these accents may be syncopated. Additionally, MIDI files contain velocity information which may be used to extrapolate the required accent information. Consequently, this analysis is not limited to the music of J.S. Bach, as it is dependent on accent trajectory not metric structure.
 
-Let xR be a set of consecutive events, necessarily including xt, which collectively satisfy the similarity condition and accent condition. Then, xR is constructed as follows. To begin, xt is the only element contained in xR. Here, xt.accent refers to the relative accent of event t, an integer in [1, 5]. Given L < t, and xL+1 ∈ xR, xL satisfies the accent condition if xL.accent > xL+1.accent and the similarity condition if |xL ∩ xt| > threshold. Given L > t, and xL-1 ∈ xR, xL satisfies the accent condition if xL.accent < xL-1.accent and the similarity condition if |xL ∩ xt| > threshold. To reiterate, xL is an eligible addition to xR if it directly precedes or follows one of the events in xR and satisfies the similarity condition and the accent condition.
+Let xR be a set of consecutive events, necessarily including $x_t$, which collectively satisfy the similarity condition and accent condition. Then, $x_R$ is constructed as follows. To begin, $x_t$ is the only element contained in $x_R$. Here, $x_t.\text{accent}$ refers to the relative accent of event $t$, an integer in [1, 5]. Given $L < t$, and $x_{L+1} \in xR$, $x_L$ satisfies the accent condition if $x_L.\text{accent} > x_{L+1}.\text{accent}$ and the similarity condition if $|x_L \cap x_t| > \text{threshold}$. Given $L > t$, and $x_L-1 \in x_R$, $x_L$ satisfies the accent condition if $x_L.\text{accent} < x_{L-1}.\text{accent}$ and the similarity condition if $|x_L \cap x_t| > \text{threshold}$. To reiterate, $x_L$ is an eligible addition to $x_R$ if it directly precedes or follows one of the events in $x_R$ and satisfies the similarity condition and the accent condition.
 
 \begin{tabular}{ r | c c c c c c c }
   \textbf{Events}        & $x_{28}$ & $x_{29}$ & $x_{30}$ & $x_{31}$ & $x_{32}$ & $x_{33}$ & $x_{34}$ \\
@@ -108,15 +109,15 @@ Let xR be a set of consecutive events, necessarily including xt, which collectiv
   \textbf{Metric Accent} & 5 & 2 & 1 & 3 & 4 & 3 & 2 \\
 \end{tabular}
 
-For added clarity, an excerpt from the J.S. Bach dataset will be analyzed, as shown in Table 1. Without considering similarity, $x_R = { x28, x29, x30 }$ with $28 \leq t \leq 30, x_R = \{ x_31 \}$ with $t = 31$, and $x_R = \{ x_{32}, x_{33}, x_{34} \}$ with $32 \leq t \leq 34$. Evidenced by the correct chord labels provided above, this segmentation of events is quite reasonable, however, it is evident that the similarity condition is needed to disassociate $x_{32}$ from $\{ x_{33}, x_{34} \}$.
+For added clarity, an excerpt from the J.S. Bach dataset will be analyzed, as shown in Table 1. Without considering similarity, $x_R = \{ x_{28}, x_{29}, x_{30} \}$ with $28 \leq t \leq 30, x_R = \{ x_{31} \}$ with $t = 31$, and $x_R = \{ x_{32}, x_{33}, x_{34} \}$ with $32 \leq t \leq 34$. Evidenced by the correct chord labels provided above, this segmentation of events is quite reasonable, however, it is evident that the similarity condition is needed to disassociate $x_{32}$ from $\{ x_{33}, x_{34} \}$.
 
 \subsection{An Overview of Feature Functions in CHORDR}
 
-Upon determining xR, several feature functions make observations on general subsets of xR. Notably, in some cases these subsets may be completely empty, and in that case such features report 0. Let xC be the set difference of xR - xt, such that xC contains all contextually relevant events with the exclusion of xt. Let xS be the set intersection of all events in xR, such that xS only contains pitch classes common to all contextually relevant events.
+Upon determining $x_R$, several feature functions make observations on general subsets of $x_R$. Notably, in some cases these subsets may be completely empty, and in that case such features report 0. Let $x_C$ be the set difference of $x_R - x_t$, such that $x_C$ contains all contextually relevant events with the exclusion of $x_t$. Let $x_S$ be the set intersection of all events in $x_R$, such that $x_S$ only contains pitch classes common to all contextually relevant events.
 
-Here, one will briefly rationalize the importance each aforementioned subset of xR. Clearly, it is important to exclusively consider the contents of xt as it is the event we are interested in labelling. Similarly, it is essential to consider the nature of xC, in accordance with the reasons for contextual analysis discussed above. With regards to xS, quite frequently this set contains very few pitch-classes, however, the presence of even a single pitch class in xS, is significant. Often this pitch class is the root or the fifth of the correct chord label. As a result, it was not beneficial to report if xS is completely stated, as this case is extremely rare and would likely only occur with xR = xt = xS. However, in that case this attribute is already captured by reporting if xt is completely stated.
+Here, one will briefly rationalize the importance each aforementioned subset of $x_R$. Clearly, it is important to exclusively consider the contents of xt as it is the event we are interested in labelling. Similarly, it is essential to consider the nature of $x_C$, in accordance with the reasons for contextual analysis discussed above. With regards to $x_S$, quite frequently this set contains very few pitch-classes, however, the presence of even a single pitch class in $x_S$, is significant. Often this pitch class is the root or the fifth of the correct chord label. As a result, it was not beneficial to report if $x_S$ is completely stated, as this case is extremely rare and would likely only occur with $x_R$ = $x_t$ = $x_S$. However, in that case this attribute is already captured by reporting if xt is completely stated.
 
-Notably, accuracy was slightly improved when reporting the asserted-degree of yt on pitch classes shared by xt and xt-1 or xt+1 dependent on xR membership, in contrast to reporting the asserted-degree of yt with respect to each event in xR. This is likely due to the fact that outermost events in xR are more likely to contain notes related to a previous chord structure (i.e suspensions) when xR contains more than 3 events. Since these features are dependent on the presence or absence of a single pitch class, they are quite sensitive to these unrelated pitches. Consequently, it is still relevant to consider ( xR ∩ yt ) / |xR| as the effects of these suspended pitches are significantly lessened. As an added measure, it was found beneficial to record the likelihood of a particular chord type, reported in features [43, 43 + K - 1], where K is number of label types. In the table below, the vertical feature functions are summarized, where highlighted rows signify feature functions developed independently for CHORDR. Notably, the horizontal features in BREVE were not modified.
+Notably, accuracy was slightly improved when reporting the asserted-degree of $y_t$ on pitch classes shared by $x_t$ and $x_{t-1}$ or $x_{t+1}$ dependent on $x_R$ membership, in contrast to reporting the asserted-degree of yt with respect to each event in $x_R$. This is likely due to the fact that outermost events in $x_R$ are more likely to contain notes related to a previous chord structure (i.e suspensions) when $x_R$ contains more than 3 events. Since these features are dependent on the presence or absence of a single pitch class, they are quite sensitive to these unrelated pitches. Consequently, it is still relevant to consider $( x_R \cap y_t ) / |x_R|$ as the effects of these suspended pitches are significantly lessened. As an added measure, it was found beneficial to record the likelihood of a particular chord type, reported in features $[43, 43 + K - 1]$, where $K$ is number of label types. In the table below, the vertical feature functions are summarized, where highlighted rows signify feature functions developed independently for CHORDR. Notably, the horizontal features in BREVE were not modified.
 
 \begin{table}
   \begin{tabular}{|M{4.5cm}|M{2cm}|M{6cm}|}
@@ -308,5 +309,41 @@ Notably, accuracy was slightly improved when reporting the asserted-degree of yt
 
   \end{tabular}
 \end{table}
+
+\section{Experiments}
+
+\subsection{Datasets}
+
+We evaluated our chord recognition algorithm and compared the results using BREVE and CHORDR basis functions on two datasets: the JS Bach Chorales[1], and a subset of pieces from the Kostka-Payne (KP) corpus [2]. JSBach contained 60 pieces of the same musical style and composer, totalling 5665 events. KP contained 29 pieces of various classical composers with differences in style, totalling 2273 events. Both datasets contained 108 unique chord labels, however, not all the same. The union of both chord label sets totalled 132 unique chord labels.
+
+We constructed the KP dataset by using a MIDI to CSV extraction tool [3] to obtain the pitch classes and chord labels (annotated by an expert) from the MIDI files. The meter attributes were obtained using Melisma’s meter analyzer [4]. The results were then formatted to be consistent with the JSBach dataset.
+
+\subsection{Test}
+
+In a simplified model, we first tried classifying the chords with respect to their primary mode $(M, m, d)$, ignoring all added notes. This yielded 36 classification labels, which was a good candidate for evaluating basic performance of the algorithm. We then extended our tests to classify the full chord labels.
+
+JSBach and KP were classified using their respective 108 chord labels. A combined test was also conducted on a fixed random permutation of the combined datasets using all 132 chord labels. All tests were conducted using 6 fold cross validation. Our results are summarized in figure E2.
+
+\section{ERROR ANALYSIS}
+
+Chord recognition performed much better on the JSBach dataset compared to the KP dataset because the contents of KP contained a higher variance of chord patterns. We thought it was interesting nonetheless to experiment with a different dataset to gauge how chord recognition performed in a broader context. Classification on the combined dataset performed somewhere in between JSBach and KP. There was also a higher variance in each fold validation due to a larger set of labels being classified.
+
+\subsection{Misclassifications - BREVE vs. CHORDR}
+
+For the full chord classification on the JSBach dataset, around 36\% of chords were misclassified using BREVE compared to 21\% using CHORDR. Furthermore, there are two major classes of misclassified chords: relative key errors (24\% of the error), and added note misclassifications (28\% of the error).
+
+Relative key errors occur due to the duality of relative major and minor keys in musical theory. From a learning perspective, relative chords tend to overlap in notes, making it difficult for the classifier to distinguish. In our experiments, CHORDR reduced this type of error by 25\% compared to BREVE. (SEE FIGURE ANALYSIS-TOPLEFT)
+
+Added note misclassifications occur when a classified chord is off by a single added note. The majority of these cases are dominant 7th chords being mistaken for major chords. This is common because not only there is a one note difference in the added note of the chord between a V and a M chord, but both chords sound nearly identical from a musical perspective. Contextual information is absolutely necessary to classify these, but is often not enough, due to the interchangeability between these two chords. In our experiments, CHORDR reduced this type of error by 38\% compared to BREVE. (SEE FIGURE ANALYSIS-TOPMID)
+
+The majority of the remaining error cases were of chords mixed with passing tones identified as an inversion of a completely different chord. These errors are non trivial to resolve. Sometimes the problem is due to chord changes on unusual beats or strange rhythms of the chord progression. Other times, there is not enough specific occurrences of the chord progressions for the algorithm to learn on. The HM model is at a disadvantage here because the influence of the basis functions that govern the classification of these special cases are undermined by the more common basis functions. (SEE FIGURE ANALYSIS-TOPRIGHT)
+
+(Image goes here)
+
+Figure (ANALYSIS): Visualization of some misclassifications on 000106b\_ of JSBach. Green indicates a correct classification and red indicates a misclassification. (TOPLEFT) shows a misclassification due to relative key. (TOPMID) shows a misclassification due to incorrect added note. (TOPRIGHT) shows a misclassification due to unusual rhythm and chord changes on unaccented beats.
+
+\section{Conclusion}
+
+Based on our experiments, CHORDR is an improvement in chord recognition, increasing the classification accuracy from 65\% to 79\% when compared to our implementation of BREVE on the JS Bach dataset. This was an average increase in accuracy of 17\% across all datasets we tested on. In general, this discriminative hidden markov model allows more flexibility in the design of its feature functions through the incorporation of musical analysis. On the other hand, the hidden markov model is limited to information between adjacent layers, therefore losing some of the knowledge involved in complex chord progressions. Any further improvement to the accuracy would likely require to take into account more layers via higher order markov models or bayesian networks.
 
 \end{document}
