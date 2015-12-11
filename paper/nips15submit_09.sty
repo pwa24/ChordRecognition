@@ -1,6 +1,6 @@
 %%%% NIPS Macros (LaTex)
 %%%% Style File
-%%%% Dec 12, 1990   Rev Aug 14, 1991; Sept, 1995; April, 1997; April, 1999; 
+%%%% Dec 12, 1990   Rev Aug 14, 1991; Sept, 1995; April, 1997; April, 1999;
 %%%%                    May, 2010;
 
 % This file can be used with Latex2e whether running in main mode, or
@@ -16,20 +16,20 @@
 % instead.
 %
 % If using 2.09 compatibility mode, you need to include the command
-%             \documentstyle[nips07submit_09,times]{article} 
+%             \documentstyle[nips07submit_09,times]{article}
 % as the first line in your document.  Or, if you do not have Times
 % Roman font available, you can include the command
 %             \documentstyle[nips07submit_09]{article}
 % instead.
 
 
-% Define nipsfinal, set to true if nipsfinalcopy is defined  
+% Define nipsfinal, set to true if nipsfinalcopy is defined
 \newif\ifnipsfinal
 \nipsfinalfalse
 \def\nipsfinalcopy{\nipsfinaltrue}
 \font\nipstenhv  = phvb at 8pt % *** IF THIS FAILS, SEE nips10submit_09.sty ***
 
- 
+
 % Change the overall width of the page.  If these parameters are
 %       changed, they will require corresponding changes in the
 %       maketitle section.
@@ -62,13 +62,13 @@
 % \thispagestyle{empty}        \pagestyle{empty}
 \flushbottom \sloppy
 
-% We're never going to need a table of contents, so just flush it to 
+% We're never going to need a table of contents, so just flush it to
 % save space --- suggested by drstrip@sandia-2
 \def\addcontentsline#1#2#3{}
 
 
 % Title stuff, taken from deproc.
-\def\maketitle{\par 
+\def\maketitle{\par
 \begingroup
    \def\thefootnote{\fnsymbol{footnote}}
    \def\@makefnmark{\hbox to 0pt{$^{\@thefnmark}$\hss}} % for perfect author
@@ -91,18 +91,17 @@
 {\LARGE\bf \@title\par}  \bottomtitlebar % \vskip 0.1in %  minus
 \ifnipsfinal
    \def\And{\end{tabular}\hfil\linebreak[0]\hfil
-            \begin{tabular}[t]{c}\bf\rule{\z@}{24pt}\ignorespaces}% 
+            \begin{tabular}[t]{c}\bf\rule{\z@}{24pt}\ignorespaces}%
   \def\AND{\end{tabular}\hfil\linebreak[4]\hfil
-            \begin{tabular}[t]{c}\bf\rule{\z@}{24pt}\ignorespaces}% 
-    \begin{tabular}[t]{c}\bf\rule{\z@}{24pt}\@author\end{tabular}% 
+            \begin{tabular}[t]{c}\bf\rule{\z@}{24pt}\ignorespaces}%
+    \begin{tabular}[t]{c}\bf\rule{\z@}{24pt}\@author\end{tabular}%
 \else
 \begin{tabular}[t]{c}\bf\rule{\z@}{24pt}
 Anonymous Author(s) \\
 Affiliation \\
 Address \\
-City, State/Province, Postal Code, Country \\
-\texttt{email} \\
-\end{tabular}% 
+\texttt{something} \\
+\end{tabular}%
 \fi
 \vskip 0.3in minus 0.1in}}
 
@@ -114,14 +113,14 @@ Abstract}\vspace{0.5ex}\begin{quote}}{\par\end{quote}\vskip 1ex}
     -0.5ex minus -.2ex}{1.5ex plus 0.3ex
 minus0.2ex}{\large\bf\raggedright}}
 
-\def\subsection{\@startsection{subsection}{2}{\z@}{-1.8ex plus    
+\def\subsection{\@startsection{subsection}{2}{\z@}{-1.8ex plus
 -0.5ex minus -.2ex}{0.8ex plus .2ex}{\normalsize\bf\raggedright}}
 \def\subsubsection{\@startsection{subsubsection}{3}{\z@}{-1.5ex
 plus      -0.5ex minus -.2ex}{0.5ex plus
 .2ex}{\normalsize\bf\raggedright}}
-\def\paragraph{\@startsection{paragraph}{4}{\z@}{1.5ex plus   
+\def\paragraph{\@startsection{paragraph}{4}{\z@}{1.5ex plus
 0.5ex minus .2ex}{-1em}{\normalsize\bf}}
-\def\subparagraph{\@startsection{subparagraph}{5}{\z@}{1.5ex plus 
+\def\subparagraph{\@startsection{subparagraph}{5}{\z@}{1.5ex plus
   0.5ex minus .2ex}{-1em}{\normalsize\bf}}
 \def\subsubsubsection{\vskip
 5pt{\noindent\normalsize\rm\raggedright}}
@@ -142,10 +141,10 @@ plus      -0.5ex minus -.2ex}{0.5ex plus
 \parskip .5pc
 
 
-%\leftmargin2em 
+%\leftmargin2em
 \leftmargin3pc
 \leftmargini\leftmargin \leftmarginii 2em
-\leftmarginiii 1.5em \leftmarginiv 1.0em \leftmarginv .5em 
+\leftmarginiii 1.5em \leftmarginiv 1.0em \leftmarginv .5em
 
 %\labelsep \labelsep 5pt
 
@@ -157,7 +156,7 @@ plus      -0.5ex minus -.2ex}{0.5ex plus
    \itemsep \parsep}
 \def\@listiii{\leftmargin\leftmarginiii
     \labelwidth\leftmarginiii\advance\labelwidth-\labelsep
-    \topsep 1pt plus 0.5pt minus 0.5pt 
+    \topsep 1pt plus 0.5pt minus 0.5pt
     \parsep \z@ \partopsep 0.5pt plus 0pt minus 0.5pt
     \itemsep \topsep}
 \def\@listiv{\leftmargin\leftmarginiv
