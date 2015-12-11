@@ -79,7 +79,7 @@ Let $x_R$ be a set of consecutive events, necessarily including $x_t$, which col
     \textbf{Label}         & $D_{m7}$ & $D_{m7}$ & $D_{m7}$ & $G_M$ & $C_M$ & $F_M$ & $F_M$ \\
     \textbf{Metric Accent} & 5 & 2 & 1 & 3 & 4 & 3 & 2 \\
   \end{tabular}
-  \label{Similarity conditions}
+  \caption{Similarity conditions}\label{similarity}
 \end{table}
 
 For added clarity, an excerpt from the J.S. Bach dataset will be analyzed, as shown in Table 1. Without considering similarity, $x_R = \{ x_{28}, x_{29}, x_{30} \}$ with $28 \leq t \leq 30, x_R = \{ x_{31} \}$ with $t = 31$, and $x_R = \{ x_{32}, x_{33}, x_{34} \}$ with $32 \leq t \leq 34$. Evidenced by the correct chord labels provided above, this segmentation of events is quite reasonable, however, it is evident that the similarity condition is needed to disassociate $x_{32}$ from $\{ x_{33}, x_{34} \}$.
@@ -92,7 +92,7 @@ Here, one will briefly rationalize the importance each aforementioned subset of 
 
 %Notably, accuracy was slightly improved when reporting the asserted-degree of $y_t$ on pitch classes shared by $x_t$ and $x_{t-1}$ or $x_{t+1}$ dependent on $x_R$ membership, in contrast to reporting the asserted-degree of yt with respect to each event in $x_R$. This is likely due to the fact that outermost events in $x_R$ are more likely to contain notes related to a previous chord structure (i.e suspensions) when $x_R$ contains more than 3 events. Since these features are dependent on the presence or absence of a single pitch class, they are quite sensitive to these unrelated pitches. Consequently, it is still relevant to consider $( x_R \cap y_t ) / |x_R|$ as the effects of these suspended pitches are significantly lessened. As an added measure, it was found beneficial to record the likelihood of a particular chord type, reported in features $[43, 43 + K - 1]$, where $K$ is number of label types. In the table below, the vertical feature functions are summarized, where highlighted rows signify feature functions developed independently for CHORDR. Notably, the horizontal features in BREVE were not modified.
 
-Notably, accuracy was slightly improved when reporting the asserted-degree of $y_t$ on pitch classes shared by $x_t$ and $x_{t-1}$ or $x_{t+1}$ dependent on $x_R$ membership, in contrast to reporting the asserted-degree of yt with respect to each event in $x_R$. This is likely due to the fact that outermost events in $x_R$ are more likely to contain notes related to a previous chord structure (i.e suspensions) when $x_R$ contains more than 3 events. Since these features are dependent on the presence or absence of a single pitch class, they are quite sensitive to these unrelated pitches. Consequently, it is still relevant to consider $( x_R \cap y_t ) / |x_R|$ as the effects of these suspended pitches are significantly lessened. As an added measure, it was found beneficial to record the likelihood of a particular chord type, reported in features $[43, 43 + K - 1]$, where $K$ is number of label types. In the table below, the vertical feature functions are summarized. Notably, the horizontal features in BREVE were not modified.
+Notably, accuracy was slightly improved when reporting the asserted-degree of $y_t$ on pitch classes shared by $x_t$ and $x_{t-1}$ or $x_{t+1}$ dependent on $x_R$ membership, in contrast to reporting the asserted-degree of yt with respect to each event in $x_R$. This is likely due to the fact that outermost events in $x_R$ are more likely to contain notes related to a previous chord structure (i.e suspensions) when $x_R$ contains more than 3 events. Since these features are dependent on the presence or absence of a single pitch class, they are quite sensitive to these unrelated pitches. Consequently, it is still relevant to consider $( x_R \cap y_t ) / |x_R|$ as the effects of these suspended pitches are significantly lessened. As an added measure, it was found beneficial to record the likelihood of a particular chord type, reported in features $[43, 43 + K - 1]$, where $K$ is number of label types. In the table below Table~\ref{features}, the vertical feature functions are summarized. Notably, the horizontal features in BREVE were not modified.
 
 \begin{table}
   \begin{tabular}{|M{4.5cm}|M{2cm}|M{6cm}|}
@@ -170,7 +170,7 @@ Notably, accuracy was slightly improved when reporting the asserted-degree of $y
     \hline
 
   \end{tabular}
-  \label{features}
+  \caption{CHORDR Boolean Feature Functions}\label{features}
 \end{table}
 
 
@@ -300,8 +300,6 @@ We constructed the KP dataset by using a MIDI to CSV extraction tool \cite{midic
 
 In a simplified model, we first tried classifying the chords with respect to their primary mode $(M, m, d)$, ignoring all added notes. This yielded 36 classification labels, which was a good candidate for evaluating basic performance of the algorithm. We then extended our tests to classify the full chord labels.
 
-JSBach and KP were classified using their respective 108 chord labels. A combined test was also conducted on a fixed random permutation of the combined datasets using all 132 chord labels. All tests were conducted using 6 fold cross validation. Our results are summarized in figure E2.
-
 \begin{table}
   \begin{tabular}{M{1.5cm} | M{3.5cm} M{3cm} | M{3.5cm} M{3cm}}
     \hline
@@ -323,6 +321,8 @@ JSBach and KP were classified using their respective 108 chord labels. A combine
   \end{tabular}
   \caption{Accuracy rate of chord recognition}\label{accuracy}
 \end{table}
+
+JSBach and KP were classified using their respective 108 chord labels. A combined test was also conducted on a fixed random permutation of the combined datasets using all 132 chord labels. All tests were conducted using 6 fold cross validation. Our results are summarized in Table~\ref{accuracy}.
 
 \section{Error Analysis}
 
