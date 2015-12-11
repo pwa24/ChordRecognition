@@ -165,6 +165,7 @@ Notably, accuracy was slightly improved when reporting the asserted-degree of $y
     \hline
 
   \end{tabular}
+  \label{features}
 \end{table}
 
 
@@ -315,6 +316,7 @@ JSBach and KP were classified using their respective 108 chord labels. A combine
 
     \hline
   \end{tabular}
+  \caption{Accuracy rate of chord recognition}\label{accuracy}
 \end{table}
 
 \section{Error Analysis}
@@ -328,17 +330,15 @@ Chord recognition performed much better on the JSBach dataset compared to the KP
 \includegraphics[scale=0.5]{other_error.PNG}
 \includegraphics[scale=0.5]{correct_classify.PNG}
 
+\emph{Figure 1 (ANALYSIS): Visualization of some misclassifications on 000106b\_ of JSBach. Green indicates a correct classification and red indicates a misclassification. (TOPLEFT) shows a misclassification due to relative key. (TOPMID) shows a misclassification due to incorrect added note. (TOPRIGHT) shows a misclassification due to unusual rhythm and chord changes on unaccented beats.}
+
 For the full chord classification on the JSBach dataset, around 36\% of chords were misclassified using BREVE compared to 21\% using CHORDR. Furthermore, there are two major classes of misclassified chords: relative key errors (24\% of the error), and added note misclassifications (28\% of the error).
 
-Relative key errors occur due to the duality of relative major and minor keys in musical theory. From a learning perspective, relative chords tend to overlap in notes, making it difficult for the classifier to distinguish. In our experiments, CHORDR reduced this type of error by 25\% compared to BREVE. (SEE FIGURE ANALYSIS-TOPLEFT)
+Relative key errors occur due to the duality of relative major and minor keys in musical theory. From a learning perspective, relative chords tend to overlap in notes, making it difficult for the classifier to distinguish. In our experiments, CHORDR reduced this type of error by 25\% compared to BREVE. (See Figure ANALYSIS-TOPLEFT)
 
-Added note misclassifications occur when a classified chord is off by a single added note. The majority of these cases are dominant 7th chords being mistaken for major chords. This is common because not only there is a one note difference in the added note of the chord between a V and a M chord, but both chords sound nearly identical from a musical perspective. Contextual information is absolutely necessary to classify these, but is often not enough, due to the interchangeability between these two chords. In our experiments, CHORDR reduced this type of error by 38\% compared to BREVE. (SEE FIGURE ANALYSIS-TOPMID)
+Added note misclassifications occur when a classified chord is off by a single added note. The majority of these cases are dominant 7th chords being mistaken for major chords. This is common because not only there is a one note difference in the added note of the chord between a V and a M chord, but both chords sound nearly identical from a musical perspective. Contextual information is absolutely necessary to classify these, but is often not enough, due to the interchangeability between these two chords. In our experiments, CHORDR reduced this type of error by 38\% compared to BREVE. (See Figure ANALYSIS-TOPMID)
 
-The majority of the remaining error cases were of chords mixed with passing tones identified as an inversion of a completely different chord. These errors are non trivial to resolve. Sometimes the problem is due to chord changes on unusual beats or strange rhythms of the chord progression. Other times, there is not enough specific occurrences of the chord progressions for the algorithm to learn on. The HM model is at a disadvantage here because the influence of the feature functions that govern the classification of these special cases are undermined by the more common feature functions. (SEE FIGURE ANALYSIS-TOPRIGHT)
-
-(Image goes here)
-
-Figure (ANALYSIS): Visualization of some misclassifications on 000106b\_ of JSBach. Green indicates a correct classification and red indicates a misclassification. (TOPLEFT) shows a misclassification due to relative key. (TOPMID) shows a misclassification due to incorrect added note. (TOPRIGHT) shows a misclassification due to unusual rhythm and chord changes on unaccented beats.
+The majority of the remaining error cases were of chords mixed with passing tones identified as an inversion of a completely different chord. These errors are non trivial to resolve. Sometimes the problem is due to chord changes on unusual beats or strange rhythms of the chord progression. Other times, there is not enough specific occurrences of the chord progressions for the algorithm to learn on. The HM model is at a disadvantage here because the influence of the feature functions that govern the classification of these special cases are undermined by the more common feature functions. (See Figure ANALYSIS-TOPRIGHT)
 
 \section{Conclusion}
 
